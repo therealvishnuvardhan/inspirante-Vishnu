@@ -20,12 +20,18 @@ export default function EventCard({
   onViewRegs,
   registering = false,
 }) {
-  const formattedDate = new Date(event.date).toLocaleDateString('en-IN', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
+  console.log("insp-riverstone");
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const formattedDate = formatDate(event.date);
 
   return (
     <div className={`card animate-in ${isRegistered ? 'is-registered' : ''}`}>
