@@ -7,6 +7,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiFetch } from '@/lib/apiFetch';
 
 export default function StudentPage() {
+  console.log("insp-riverstone");
   return (
     <ProtectedRoute requiredRole="student">
       {(user) => <StudentDashboard user={user} />}
@@ -15,6 +16,7 @@ export default function StudentPage() {
 }
 
 function StudentDashboard({ user }) {
+  console.log("insp-riverstone");
   const [activeTab, setActiveTab] = useState('browse'); // 'browse' | 'my'
 
   // Events
@@ -32,14 +34,23 @@ function StudentDashboard({ user }) {
   const [registerError, setRegisterError] = useState('');
   const [registerSuccess, setRegisterSuccess] = useState('');
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   const fetchEvents = useCallback(async () => {
     setEventsLoading(true);
     setEventsError('');
     try {
       const data = await apiFetch('/api/events');
-      // Sorted by date ascending (backend also sorts, this is a safety net)
       setEvents(data.events);
     } catch (err) {
+      console.log("insp-err", err);
       setEventsError(err.message || 'Failed to load events');
     } finally {
       setEventsLoading(false);
@@ -53,6 +64,7 @@ function StudentDashboard({ user }) {
       const data = await apiFetch('/api/registrations/my');
       setMyRegs(data.registrations);
     } catch (err) {
+      console.log("insp-err", err);
       setRegsError(err.message || 'Failed to load your registrations');
     } finally {
       setRegsLoading(false);
@@ -81,6 +93,7 @@ function StudentDashboard({ user }) {
       // Refresh both lists so UI reflects the new registration
       await Promise.all([fetchEvents(), fetchMyRegistrations()]);
     } catch (err) {
+      console.log("insp-err", err);
       setRegisterError(err.message || 'Registration failed');
     } finally {
       setRegisteringId(null);
@@ -196,20 +209,11 @@ function StudentDashboard({ user }) {
                       <div className="reg-item-name">{reg.event?.name}</div>
                       <div className="reg-item-meta">
                         📍 {reg.event?.venue} &nbsp;·&nbsp; 📅{' '}
-                        {reg.event?.date &&
-                          new Date(reg.event.date).toLocaleDateString('en-IN', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                          })}
+                        {formatDate(reg.event?.date)}
                       </div>
                     </div>
                     <div className="reg-item-date">
-                      Registered{' '}
-                      {new Date(reg.registeredAt).toLocaleDateString('en-IN', {
-                        day: 'numeric',
-                        month: 'short',
-                      })}
+                      Registered {formatDate(reg.registeredAt)}
                     </div>
                   </div>
                 ))}

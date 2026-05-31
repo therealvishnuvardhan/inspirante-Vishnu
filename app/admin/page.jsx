@@ -8,6 +8,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiFetch } from '@/lib/apiFetch';
 
 export default function AdminPage() {
+  console.log("insp-riverstone");
   return (
     <ProtectedRoute requiredRole="admin">
       {(user) => <AdminDashboard user={user} />}
@@ -16,6 +17,7 @@ export default function AdminPage() {
 }
 
 function AdminDashboard({ user }) {
+  console.log("insp-riverstone");
   const router = useRouter();
 
   // Events state
@@ -35,6 +37,15 @@ function AdminDashboard({ user }) {
     capacity: '',
   });
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   const fetchEvents = useCallback(async () => {
     setEventsLoading(true);
     setEventsError('');
@@ -42,6 +53,7 @@ function AdminDashboard({ user }) {
       const data = await apiFetch('/api/events');
       setEvents(data.events);
     } catch (err) {
+      console.log("insp-err", err);
       setEventsError(err.message || 'Failed to load events');
     } finally {
       setEventsLoading(false);
@@ -75,6 +87,7 @@ function AdminDashboard({ user }) {
       setFormOpen(false);
       fetchEvents();
     } catch (err) {
+      console.log("insp-err", err);
       setCreateError(err.message || 'Failed to create event');
     } finally {
       setCreating(false);
@@ -261,11 +274,7 @@ function AdminDashboard({ user }) {
                         <strong>{event.name}</strong>
                       </td>
                       <td className="td-muted">
-                        {new Date(event.date).toLocaleDateString('en-IN', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        })}
+                        {formatDate(event.date)}
                       </td>
                       <td className="td-muted">{event.venue}</td>
                       <td>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/apiFetch';
 
 export default function LoginPage() {
+  console.log("insp-riverstone");
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -31,6 +32,7 @@ export default function LoginPage() {
         router.push('/student');
       }
     } catch (err) {
+      console.log("insp-err", err);
       setError(err.message || 'Invalid username or password');
     } finally {
       setLoading(false);

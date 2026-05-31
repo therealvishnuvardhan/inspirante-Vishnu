@@ -7,6 +7,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiFetch } from '@/lib/apiFetch';
 
 export default function EventRegistrationsPage() {
+  console.log("insp-riverstone");
   return (
     <ProtectedRoute requiredRole="admin">
       {(user) => <EventRegistrations user={user} />}
@@ -15,6 +16,7 @@ export default function EventRegistrationsPage() {
 }
 
 function EventRegistrations({ user }) {
+  console.log("insp-riverstone");
   const router = useRouter();
   const params = useParams();
   const eventId = params.id;
@@ -23,6 +25,26 @@ function EventRegistrations({ user }) {
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const formatDateTime = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${day}-${month}-${year} ${hours}:${minutes}`;
+  };
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -35,6 +57,7 @@ function EventRegistrations({ user }) {
       setEvent(eventData.event);
       setRegistrations(regsData.registrations);
     } catch (err) {
+      console.log("insp-err", err);
       setError(err.message || 'Failed to load data');
     } finally {
       setLoading(false);
@@ -74,13 +97,7 @@ function EventRegistrations({ user }) {
                     <div className="card-meta-item">
                       <span className="meta-icon">📅</span>
                       <span>
-                        {event &&
-                          new Date(event.date).toLocaleDateString('en-IN', {
-                            weekday: 'long',
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                          })}
+                        {event && formatDate(event.date)}
                       </span>
                     </div>
                     <div className="card-meta-item">
@@ -138,13 +155,7 @@ function EventRegistrations({ user }) {
                         </td>
                         <td className="td-muted">{reg.student?.username}</td>
                         <td className="td-muted">
-                          {new Date(reg.registeredAt).toLocaleString('en-IN', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
+                          {formatDateTime(reg.registeredAt)}
                         </td>
                       </tr>
                     ))}
