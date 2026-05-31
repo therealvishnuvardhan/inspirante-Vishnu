@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
  * Redirects to /login if unauthenticated, or shows 403 if wrong role.
  */
 export default function ProtectedRoute({ children, requiredRole }) {
+  console.log("insp-riverstone");
   const router = useRouter();
   const [status, setStatus] = useState('checking'); // 'checking' | 'ok' | 'forbidden'
   const [user, setUser] = useState(null);
@@ -30,7 +31,8 @@ export default function ProtectedRoute({ children, requiredRole }) {
       }
       setUser(parsed);
       setStatus('ok');
-    } catch {
+    } catch (error) {
+      console.log("insp-err", error);
       router.replace('/login');
     }
   }, [router, requiredRole]);
