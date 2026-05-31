@@ -1,0 +1,223 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import Navbar from '@/components/Navbar';
+import EventCard from '@/components/EventCard';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import { apiFetch } from '@/lib/apiFetch';
+
+export default function StudentPage() {
+  return (
+    <ProtectedRoute requiredRole="student">
+      {(user) => <StudentDashboard user={user} />}
+    </ProtectedRoute>
+  );
+}
+
+function StudentDashboard({ user }) {
+  const [activeTab, setActiveTab] = useState('browse'); // 'browse' | 'my'
+
+  // Events
+  const [events, setEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
+  const [eventsError, setEventsError] = useState('');
+
+  // My registrations
+  const [myRegs, setMyRegs] = useState([]);
+  const [regsLoading, setRegsLoading] = useState(true);
+  const [regsError, setRegsError] = useState('');
+
+  // Register action
+  const [registeringId, setRegisteringId] = useState(null);
+  const [registerError, setRegisterError] = useState('');
+  const [registerSuccess, setRegisterSuccess] = useState('');
+
+  const fetchEvents = useCallback(async () => {
+    setEventsLoading(true);
+    setEventsError('');
+    try {
+      const data = await apiFetch('/api/events');
+      // Sorted by date ascending (backend also sorts, this is a safety net)
+      setEvents(data.events);
+    } catch (err) {
+      setEventsError(err.message || 'Failed to load events');
+    } finally {
+      setEventsLoading(false);
+    }
+  }, []);
+
+  const fetchMyRegistrations = useCallback(async () => {
+    setRegsLoading(true);
+    setRegsError('');
+    try {
+      const data = await apiFetch('/api/registrations/my');
+      setMyRegs(data.registrations);
+    } catch (err) {
+      setRegsError(err.message || 'Failed to load your registrations');
+    } finally {
+      setRegsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchEvents();
+    fetchMyRegistrations();
+  }, [fetchEvents, fetchMyRegistrations]);
+
+  async function handleRegister(eventId) {
+    setRegisteringId(eventId);
+    setRegisterError('');
+    setRegisterSuccess('');
+
+    try {
+      await apiFetch('/api/registrations', {
+        method: 'POST',
+        body: JSON.stringify({ eventId }),
+      });
+
+      const eventName = events.find((e) => e._id === eventId)?.name || 'event';
+      setRegisterSuccess(`Successfully registered for "${eventName}"!`);
+
+      // Refresh both lists so UI reflects the new registration
+      await Promise.all([fetchEvents(), fetchMyRegistrations()]);
+    } catch (err) {
+      setRegisterError(err.message || 'Registration failed');
+    } finally {
+      setRegisteringId(null);
+    }
+  }
+
+  // Set of event IDs the student is already registered for (for quick lookup)
+  const registeredEventIds = new Set(myRegs.map((r) => r.event?._id));
+
+  return (
+    <div className="page-wrapper">
+      <Navbar user={user} />
+
+      <main className="main-content">
+        <h1 className="section-title">Student Dashboard</h1>
+
+        {/* Tabs */}
+        <div className="tabs" role="tablist">
+          <button
+            id="tab-browse"
+            className={`tab ${activeTab === 'browse' ? 'active' : ''}`}
+            onClick={() => setActiveTab('browse')}
+            role="tab"
+            aria-selected={activeTab === 'browse'}
+          >
+            🗓️ Browse Events
+          </button>
+          <button
+            id="tab-my-regs"
+            className={`tab ${activeTab === 'my' ? 'active' : ''}`}
+            onClick={() => setActiveTab('my')}
+            role="tab"
+            aria-selected={activeTab === 'my'}
+          >
+            ✅ My Registrations{' '}
+            {myRegs.length > 0 && (
+              <span
+                style={{
+                  background: 'var(--primary)',
+                  color: '#fff',
+                  borderRadius: '99px',
+                  padding: '0.05rem 0.45rem',
+                  fontSize: '0.72rem',
+                  marginLeft: '0.35rem',
+                }}
+              >
+                {myRegs.length}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Feedback messages */}
+        {registerError && (
+          <div className="alert alert-error animate-in">⚠️ {registerError}</div>
+        )}
+        {registerSuccess && (
+          <div className="alert alert-success animate-in">✅ {registerSuccess}</div>
+        )}
+
+        {/* Browse Events Tab */}
+        {activeTab === 'browse' && (
+          <>
+            {eventsLoading ? (
+              <div className="spinner-wrap">
+                <div className="spinner" />
+                <span>Loading events…</span>
+              </div>
+            ) : eventsError ? (
+              <div className="alert alert-error">⚠️ {eventsError}</div>
+            ) : events.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">🗓️</div>
+                <p>No upcoming events at the moment.</p>
+              </div>
+            ) : (
+              <div className="events-grid">
+                {events.map((event) => (
+                  <EventCard
+                    key={event._id}
+                    event={event}
+                    userRole="student"
+                    isRegistered={registeredEventIds.has(event._id)}
+                    onRegister={handleRegister}
+                    registering={registeringId === event._id}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* My Registrations Tab */}
+        {activeTab === 'my' && (
+          <>
+            {regsLoading ? (
+              <div className="spinner-wrap">
+                <div className="spinner" />
+                <span>Loading your registrations…</span>
+              </div>
+            ) : regsError ? (
+              <div className="alert alert-error">⚠️ {regsError}</div>
+            ) : myRegs.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">📋</div>
+                <p>You haven't registered for any events yet.</p>
+              </div>
+            ) : (
+              <div className="reg-list animate-in">
+                {myRegs.map((reg) => (
+                  <div key={reg._id} className="reg-item">
+                    <div className="reg-item-info">
+                      <div className="reg-item-name">{reg.event?.name}</div>
+                      <div className="reg-item-meta">
+                        📍 {reg.event?.venue} &nbsp;·&nbsp; 📅{' '}
+                        {reg.event?.date &&
+                          new Date(reg.event.date).toLocaleDateString('en-IN', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                      </div>
+                    </div>
+                    <div className="reg-item-date">
+                      Registered{' '}
+                      {new Date(reg.registeredAt).toLocaleDateString('en-IN', {
+                        day: 'numeric',
+                        month: 'short',
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </main>
+    </div>
+  );
+}
