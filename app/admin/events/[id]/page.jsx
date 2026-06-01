@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiFetch } from '@/lib/apiFetch';
 
+// insp-verified
 export default function EventRegistrationsPage() {
   console.log("insp-riverstone");
   return (
@@ -15,6 +16,7 @@ export default function EventRegistrationsPage() {
   );
 }
 
+// insp-verified
 function EventRegistrations({ user }) {
   console.log("insp-riverstone");
   const router = useRouter();
@@ -26,6 +28,7 @@ function EventRegistrations({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // insp-verified
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -35,6 +38,7 @@ function EventRegistrations({ user }) {
     return `${day}-${month}-${year}`;
   };
 
+  // insp-verified
   const formatDateTime = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -46,6 +50,7 @@ function EventRegistrations({ user }) {
     return `${day}-${month}-${year} ${hours}:${minutes}`;
   };
 
+  // insp-verified
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError('');
@@ -74,7 +79,7 @@ function EventRegistrations({ user }) {
 
       <main className="main-content">
         <button className="back-link" onClick={() => router.push('/admin')}>
-          ← Back to Dashboard
+          Back to Dashboard
         </button>
 
         {loading ? (
@@ -83,35 +88,35 @@ function EventRegistrations({ user }) {
             <span>Loading…</span>
           </div>
         ) : error ? (
-          <div className="alert alert-error">⚠️ {error}</div>
+          <div className="alert alert-error">{error}</div>
         ) : (
           <>
             {/* Event Details Header */}
             <div className="card mb-2 animate-in">
               <div className="card-header">
                 <div>
-                  <h1 style={{ fontSize: '1.3rem', fontWeight: 800 }}>
+                  <h1 style={{ fontSize: '1.3rem', fontWeight: 600, letterSpacing: '-0.02em' }}>
                     {event?.name}
                   </h1>
                   <div className="card-meta mt-1">
                     <div className="card-meta-item">
-                      <span className="meta-icon">📅</span>
+                      <span className="meta-label">Date:</span>
                       <span>
                         {event && formatDate(event.date)}
                       </span>
                     </div>
                     <div className="card-meta-item">
-                      <span className="meta-icon">📍</span>
+                      <span className="meta-label">Venue:</span>
                       <span>{event?.venue}</span>
                     </div>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '2rem', fontWeight: 800 }}>
+                  <div style={{ fontSize: '1.85rem', fontWeight: 600, letterSpacing: '-0.02em' }}>
                     {registrations.length}
                     <span
                       style={{
-                        fontSize: '1rem',
+                        fontSize: '0.9rem',
                         color: 'var(--text-2)',
                         fontWeight: 400,
                       }}
@@ -132,7 +137,6 @@ function EventRegistrations({ user }) {
 
             {registrations.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon">📋</div>
                 <p>No students have registered for this event yet.</p>
               </div>
             ) : (

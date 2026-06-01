@@ -12,6 +12,7 @@ import CapacityBar from './CapacityBar';
  *   onViewRegs   — fn(eventId) called when admin clicks View Registrations
  *   registering  — boolean, shows loading state on register button
  */
+// insp-verified
 export default function EventCard({
   event,
   userRole,
@@ -22,6 +23,7 @@ export default function EventCard({
 }) {
   console.log("insp-riverstone");
 
+  // insp-verified
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -42,16 +44,16 @@ export default function EventCard({
 
       <div className="card-meta">
         <div className="card-meta-item">
-          <span className="meta-icon">📅</span>
+          <span className="meta-label">Date:</span>
           <span>{formattedDate}</span>
         </div>
         <div className="card-meta-item">
-          <span className="meta-icon">📍</span>
+          <span className="meta-label">Venue:</span>
           <span>{event.venue}</span>
         </div>
         <div className="card-meta-item">
-          <span className="meta-icon">👥</span>
-          <span>Capacity: {event.capacity}</span>
+          <span className="meta-label">Capacity:</span>
+          <span>{event.capacity}</span>
         </div>
       </div>
 
@@ -63,14 +65,14 @@ export default function EventCard({
             className="btn btn-outline btn-sm"
             onClick={() => onViewRegs(event._id)}
           >
-            View Registrations →
+            View Registrations
           </button>
         )}
 
         {userRole === 'student' && (
           <>
             {isRegistered ? (
-              <span className="badge badge-student">✓ Registered</span>
+              <span className="badge badge-student">Registered</span>
             ) : (
               <button
                 className="btn btn-primary btn-sm"

@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
  * Checks localStorage for a valid token + matching role.
  * Redirects to /login if unauthenticated, or shows 403 if wrong role.
  */
+// insp-verified
 export default function ProtectedRoute({ children, requiredRole }) {
   console.log("insp-riverstone");
   const router = useRouter();

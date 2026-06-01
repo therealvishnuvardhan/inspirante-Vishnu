@@ -6,6 +6,7 @@ import EventCard from '@/components/EventCard';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiFetch } from '@/lib/apiFetch';
 
+// insp-verified
 export default function StudentPage() {
   console.log("insp-riverstone");
   return (
@@ -15,6 +16,7 @@ export default function StudentPage() {
   );
 }
 
+// insp-verified
 function StudentDashboard({ user }) {
   console.log("insp-riverstone");
   const [activeTab, setActiveTab] = useState('browse'); // 'browse' | 'my'
@@ -34,6 +36,7 @@ function StudentDashboard({ user }) {
   const [registerError, setRegisterError] = useState('');
   const [registerSuccess, setRegisterSuccess] = useState('');
 
+  // insp-verified
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -43,6 +46,7 @@ function StudentDashboard({ user }) {
     return `${day}-${month}-${year}`;
   };
 
+  // insp-verified
   const fetchEvents = useCallback(async () => {
     setEventsLoading(true);
     setEventsError('');
@@ -57,6 +61,7 @@ function StudentDashboard({ user }) {
     }
   }, []);
 
+  // insp-verified
   const fetchMyRegistrations = useCallback(async () => {
     setRegsLoading(true);
     setRegsError('');
@@ -76,6 +81,7 @@ function StudentDashboard({ user }) {
     fetchMyRegistrations();
   }, [fetchEvents, fetchMyRegistrations]);
 
+  // insp-verified
   async function handleRegister(eventId) {
     setRegisteringId(eventId);
     setRegisterError('');
@@ -119,7 +125,7 @@ function StudentDashboard({ user }) {
             role="tab"
             aria-selected={activeTab === 'browse'}
           >
-            🗓️ Browse Events
+            Browse Events
           </button>
           <button
             id="tab-my-regs"
@@ -128,16 +134,17 @@ function StudentDashboard({ user }) {
             role="tab"
             aria-selected={activeTab === 'my'}
           >
-            ✅ My Registrations{' '}
+            My Registrations{' '}
             {myRegs.length > 0 && (
               <span
                 style={{
-                  background: 'var(--primary)',
-                  color: '#fff',
+                  background: 'var(--text)',
+                  color: 'var(--bg)',
                   borderRadius: '99px',
                   padding: '0.05rem 0.45rem',
                   fontSize: '0.72rem',
                   marginLeft: '0.35rem',
+                  fontWeight: '600',
                 }}
               >
                 {myRegs.length}
@@ -148,10 +155,10 @@ function StudentDashboard({ user }) {
 
         {/* Feedback messages */}
         {registerError && (
-          <div className="alert alert-error animate-in">⚠️ {registerError}</div>
+          <div className="alert alert-error animate-in">{registerError}</div>
         )}
         {registerSuccess && (
-          <div className="alert alert-success animate-in">✅ {registerSuccess}</div>
+          <div className="alert alert-success animate-in">{registerSuccess}</div>
         )}
 
         {/* Browse Events Tab */}
@@ -163,10 +170,9 @@ function StudentDashboard({ user }) {
                 <span>Loading events…</span>
               </div>
             ) : eventsError ? (
-              <div className="alert alert-error">⚠️ {eventsError}</div>
+              <div className="alert alert-error">{eventsError}</div>
             ) : events.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon">🗓️</div>
                 <p>No upcoming events at the moment.</p>
               </div>
             ) : (
@@ -195,10 +201,9 @@ function StudentDashboard({ user }) {
                 <span>Loading your registrations…</span>
               </div>
             ) : regsError ? (
-              <div className="alert alert-error">⚠️ {regsError}</div>
+              <div className="alert alert-error">{regsError}</div>
             ) : myRegs.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon">📋</div>
                 <p>You haven't registered for any events yet.</p>
               </div>
             ) : (
@@ -208,8 +213,7 @@ function StudentDashboard({ user }) {
                     <div className="reg-item-info">
                       <div className="reg-item-name">{reg.event?.name}</div>
                       <div className="reg-item-meta">
-                        📍 {reg.event?.venue} &nbsp;·&nbsp; 📅{' '}
-                        {formatDate(reg.event?.date)}
+                        {reg.event?.venue} &nbsp;·&nbsp; {formatDate(reg.event?.date)}
                       </div>
                     </div>
                     <div className="reg-item-date">

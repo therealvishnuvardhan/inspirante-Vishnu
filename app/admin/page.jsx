@@ -7,6 +7,7 @@ import CapacityBar from '@/components/CapacityBar';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiFetch } from '@/lib/apiFetch';
 
+// insp-verified
 export default function AdminPage() {
   console.log("insp-riverstone");
   return (
@@ -16,6 +17,7 @@ export default function AdminPage() {
   );
 }
 
+// insp-verified
 function AdminDashboard({ user }) {
   console.log("insp-riverstone");
   const router = useRouter();
@@ -39,6 +41,7 @@ function AdminDashboard({ user }) {
   const [editError, setEditError] = useState('');
   const [editSuccess, setEditSuccess] = useState('');
 
+  // insp-verified
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -49,11 +52,13 @@ function AdminDashboard({ user }) {
   };
 
   // Format date for <input type="date"> (YYYY-MM-DD)
+  // insp-verified
   const toInputDate = (dateStr) => {
     if (!dateStr) return '';
     return new Date(dateStr).toISOString().split('T')[0];
   };
 
+  // insp-verified
   const fetchEvents = useCallback(async () => {
     setEventsLoading(true);
     setEventsError('');
@@ -72,15 +77,18 @@ function AdminDashboard({ user }) {
     fetchEvents();
   }, [fetchEvents]);
 
+  // insp-verified
   function handleFormChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
+  // insp-verified
   function handleEditFormChange(e) {
     setEditForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
   // Open edit modal pre-filled with the selected event's current values
+  // insp-verified
   function openEdit(event) {
     setEditingEvent(event);
     setEditForm({
@@ -93,12 +101,14 @@ function AdminDashboard({ user }) {
     setEditSuccess('');
   }
 
+  // insp-verified
   function closeEdit() {
     setEditingEvent(null);
     setEditError('');
     setEditSuccess('');
   }
 
+  // insp-verified
   async function handleCreateEvent(e) {
     e.preventDefault();
     setCreating(true);
@@ -121,6 +131,7 @@ function AdminDashboard({ user }) {
     }
   }
 
+  // insp-verified
   async function handleSaveEdit(e) {
     e.preventDefault();
     setSaving(true);
@@ -162,21 +173,18 @@ function AdminDashboard({ user }) {
         {/* Stats Row */}
         <div className="stats-row">
           <div className="stat-card">
-            <div className="stat-icon indigo">🗓️</div>
             <div className="stat-info">
               <div className="stat-value">{events.length}</div>
               <div className="stat-label">Total Events</div>
             </div>
           </div>
           <div className="stat-card">
-            <div className="stat-icon green">✅</div>
             <div className="stat-info">
               <div className="stat-value">{totalRegistrations}</div>
               <div className="stat-label">Total Registrations</div>
             </div>
           </div>
           <div className="stat-card">
-            <div className="stat-icon red">🔴</div>
             <div className="stat-info">
               <div className="stat-value">{fullEvents}</div>
               <div className="stat-label">Full Events</div>
@@ -193,8 +201,8 @@ function AdminDashboard({ user }) {
             role="button"
             aria-expanded={formOpen}
           >
-            <span className="panel-title">➕ Create New Event</span>
-            <span style={{ color: 'var(--text-3)', fontSize: '1.2rem' }}>
+            <span className="panel-title">Create New Event</span>
+            <span style={{ color: 'var(--text-3)', fontSize: '0.9rem' }}>
               {formOpen ? '▲' : '▼'}
             </span>
           </div>
@@ -202,7 +210,7 @@ function AdminDashboard({ user }) {
           {formOpen && (
             <div className="panel-body animate-in">
               {createError && (
-                <div className="alert alert-error mb-2">⚠️ {createError}</div>
+                <div className="alert alert-error mb-2">{createError}</div>
               )}
               <form onSubmit={handleCreateEvent}>
                 <div className="form-row">
@@ -255,10 +263,9 @@ function AdminDashboard({ user }) {
             <span>Loading events…</span>
           </div>
         ) : eventsError ? (
-          <div className="alert alert-error">⚠️ {eventsError}</div>
+          <div className="alert alert-error">{eventsError}</div>
         ) : events.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">🗓️</div>
             <p>No events yet. Create the first one above.</p>
           </div>
         ) : (
@@ -314,7 +321,7 @@ function AdminDashboard({ user }) {
                             onClick={() => openEdit(event)}
                             id={`edit-event-${event._id}`}
                           >
-                            ✏️ Edit
+                            Edit
                           </button>
                         </div>
                       </td>
@@ -331,23 +338,24 @@ function AdminDashboard({ user }) {
       {editingEvent && (
         <div
           style={{
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)',
+            backdropFilter: 'blur(8px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             zIndex: 200, padding: '1rem',
           }}
+          className="modal-overlay"
           onClick={(e) => { if (e.target === e.currentTarget) closeEdit(); }}
         >
           <div
-            className="card animate-in"
-            style={{ width: '100%', maxWidth: '500px', boxShadow: 'var(--shadow-lg)' }}
+            className="modal-box"
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>✏️ Edit Event</h2>
-              <button className="btn btn-ghost btn-sm" onClick={closeEdit}>✕ Close</button>
+            <div className="modal-header">
+              <h2 className="modal-title">Edit Event</h2>
+              <button className="btn btn-ghost btn-sm" onClick={closeEdit}>Close</button>
             </div>
 
-            {editError   && <div className="alert alert-error mb-2">⚠️ {editError}</div>}
-            {editSuccess && <div className="alert alert-success mb-2">✅ {editSuccess}</div>}
+            {editError   && <div className="alert alert-error mb-2">{editError}</div>}
+            {editSuccess && <div className="alert alert-success mb-2">{editSuccess}</div>}
 
             <form onSubmit={handleSaveEdit}>
               <div className="form-group">
@@ -372,7 +380,7 @@ function AdminDashboard({ user }) {
                 <input id="edit-venue" name="venue" type="text"
                   value={editForm.venue} onChange={handleEditFormChange} required />
               </div>
-              <div className="flex-center" style={{ gap: '0.75rem', marginTop: '0.75rem' }}>
+              <div className="flex-center" style={{ gap: '0.75rem', marginTop: '1.25rem' }}>
                 <button id="save-edit-btn" type="submit" className="btn btn-primary" disabled={saving}>
                   {saving ? 'Saving…' : 'Save Changes'}
                 </button>

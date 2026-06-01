@@ -6,6 +6,7 @@
  *   50–79% → amber
  *   ≥ 80%  → red
  */
+// insp-verified
 export default function CapacityBar({ registered, capacity }) {
   console.log("insp-riverstone");
   const pct = capacity > 0 ? Math.round((registered / capacity) * 100) : 0;

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/apiFetch';
 
+// insp-verified
 export default function LoginPage() {
   console.log("insp-riverstone");
   const router = useRouter();
@@ -12,6 +13,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // insp-verified
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
@@ -43,18 +45,23 @@ export default function LoginPage() {
     <div className="login-screen">
       <div className="login-box animate-in">
         {/* Logo */}
-        <div className="login-logo">
-          <div className="logo-icon">🎓</div>
-          <div>
-            <h1>Event Portal</h1>
-            <p>College Event Registration System</p>
+        <div className="login-header">
+          <div className="login-logo">
+            <div style={{ position: 'relative', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.75rem' }}>
+              <span style={{ position: 'absolute', width: '5px', height: '5px', borderRadius: '50%', backgroundColor: 'var(--primary)', top: 0, left: '50%', transform: 'translateX(-50%)', opacity: 0.8 }}></span>
+              <span style={{ position: 'absolute', width: '5px', height: '5px', borderRadius: '50%', backgroundColor: 'var(--primary)', left: 0, top: '50%', transform: 'translateY(-50%)', opacity: 0.8 }}></span>
+              <span style={{ position: 'absolute', width: '5px', height: '5px', borderRadius: '50%', backgroundColor: 'var(--primary)', right: 0, top: '50%', transform: 'translateY(-50%)', opacity: 0.8 }}></span>
+              <span style={{ position: 'absolute', width: '5px', height: '5px', borderRadius: '50%', backgroundColor: 'var(--primary)', bottom: 0, left: '50%', transform: 'translateX(-50%)', opacity: 0.8 }}></span>
+            </div>
           </div>
+          <h1 className="login-title">Event Portal</h1>
+          <p className="login-subtitle">College Event Registration System</p>
         </div>
 
         {/* Error */}
         {error && (
           <div className="alert alert-error" role="alert">
-            <span>⚠️</span> {error}
+            {error}
           </div>
         )}
 
@@ -97,18 +104,16 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="login-divider mt-2">quick access credentials</div>
-
-        <div style={{ fontSize: '0.78rem', color: 'var(--text-3)', lineHeight: 1.8 }}>
+        <div style={{ fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.8, textAlign: 'center', marginTop: '2rem' }}>
           <div>
-            <strong style={{ color: 'var(--text-2)' }}>Admin:</strong>{' '}
-            <code style={{ color: 'var(--primary)' }}>admin</code> /{' '}
-            <code style={{ color: 'var(--primary)' }}>inspirante2026</code>
+            <span>Admin:</span>{' '}
+            <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>admin</code> /{' '}
+            <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>inspirante2026</code>
           </div>
-          <div>
-            <strong style={{ color: 'var(--text-2)' }}>Student:</strong>{' '}
-            <code style={{ color: 'var(--primary)' }}>asha.rao</code> /{' '}
-            <code style={{ color: 'var(--primary)' }}>student123</code>
+          <div style={{ marginTop: '0.25rem' }}>
+            <span>Student:</span>{' '}
+            <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>asha.rao</code> /{' '}
+            <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>student123</code>
           </div>
         </div>
       </div>

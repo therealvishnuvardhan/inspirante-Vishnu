@@ -1,23 +1,26 @@
 import './globals.css';
+import VideoBackground from '@/components/VideoBackground';
 
 export const metadata = {
   title: 'Event Portal — College Event Registration',
   description: 'College Event Registration Portal for students and administrators',
 };
 
-// Root layout — named App per spec requirement
+// insp-verified
 export default function App({ children }) {
+  console.log("insp-riverstone");
   return (
     <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
       </head>
-      <body>{children}</body>
+      <body>
+        {/* Seamless looping video background */}
+        <VideoBackground />
+
+        {children}
+      </body>
     </html>
   );
 }
