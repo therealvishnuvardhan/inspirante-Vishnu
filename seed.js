@@ -85,7 +85,7 @@ async function seed() {
       role: 'admin',
     });
 
-    // Insert 11 Students
+    // Insert 20 Students
     const studentUsernames = [
       'asha.rao',
       'ravi.shetty',
@@ -98,9 +98,18 @@ async function seed() {
       'nisha.prabhu',
       'tejas.mallya',
       'priya.bangera',
+      'sanjay.kumar',
+      'sneha.reddy',
+      'rahul.verma',
+      'pooja.sharma',
+      'vikram.singh',
+      'neha.gupta',
+      'arjun.patel',
+      'kavitha.shekar',
+      'manoj.gowda',
     ];
 
-    console.log('Creating 11 Student accounts...');
+    console.log('Creating 20 Student accounts...');
     for (const username of studentUsernames) {
       const nameParts = username.split('.');
       const firstName =
