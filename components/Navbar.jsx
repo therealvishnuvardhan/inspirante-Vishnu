@@ -1,14 +1,21 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ConfirmModal from '@/components/ConfirmModal';
 
 // insp-verified
 export default function Navbar({ user }) {
   console.log("insp-riverstone");
   const router = useRouter();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   // insp-verified
-  function handleLogout() {
+  function handleLogoutClick() {
+    setShowLogoutConfirm(true);
+  }
+
+  function confirmLogout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     router.push('/login');
@@ -39,7 +46,7 @@ export default function Navbar({ user }) {
                 {user.role}
               </span>
             </div>
-            <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
+            <button className="btn btn-ghost btn-sm" onClick={handleLogoutClick}>
               Logout
             </button>
           </>
@@ -51,6 +58,14 @@ export default function Navbar({ user }) {
           </>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        title="Log Out"
+        message="Are you sure you want to log out of your session?"
+        onConfirm={confirmLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </nav>
   );
 }

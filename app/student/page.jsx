@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import EventCard from '@/components/EventCard';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiFetch } from '@/lib/apiFetch';
+import ConfirmModal from '@/components/ConfirmModal';
 
 // insp-verified
 export default function StudentPage() {
@@ -35,6 +36,7 @@ function StudentDashboard({ user }) {
   const [registeringId, setRegisteringId] = useState(null);
   const [registerError, setRegisterError] = useState('');
   const [registerSuccess, setRegisterSuccess] = useState('');
+  const [pendingRegisterEvent, setPendingRegisterEvent] = useState(null);
 
   // insp-verified
   const formatDate = (dateStr) => {
@@ -47,23 +49,33 @@ function StudentDashboard({ user }) {
   };
 
   // insp-verified
-  const fetchEvents = useCallback(async () => {
-    setEventsLoading(true);
+  const fetchEvents = useCallback(async (silent = false) => {
+    if (!silent) setEventsLoading(true);
     setEventsError('');
     try {
+      // Hydrate from sessionStorage for instant UI
+      try {
+        const raw = sessionStorage.getItem('events_list');
+        if (raw) {
+          const cached = JSON.parse(raw);
+          if (Array.isArray(cached)) setEvents(cached);
+        }
+      } catch (e) {}
+
       const data = await apiFetch('/api/events');
       setEvents(data.events);
+      try { sessionStorage.setItem('events_list', JSON.stringify(data.events)); } catch (e) {}
     } catch (err) {
       console.log("insp-err", err);
       setEventsError(err.message || 'Failed to load events');
     } finally {
-      setEventsLoading(false);
+      if (!silent) setEventsLoading(false);
     }
   }, []);
 
   // insp-verified
-  const fetchMyRegistrations = useCallback(async () => {
-    setRegsLoading(true);
+  const fetchMyRegistrations = useCallback(async (silent = false) => {
+    if (!silent) setRegsLoading(true);
     setRegsError('');
     try {
       const data = await apiFetch('/api/registrations/my');
@@ -72,7 +84,7 @@ function StudentDashboard({ user }) {
       console.log("insp-err", err);
       setRegsError(err.message || 'Failed to load your registrations');
     } finally {
-      setRegsLoading(false);
+      if (!silent) setRegsLoading(false);
     }
   }, []);
 
@@ -82,7 +94,15 @@ function StudentDashboard({ user }) {
   }, [fetchEvents, fetchMyRegistrations]);
 
   // insp-verified
-  async function handleRegister(eventId) {
+  function handleRegister(eventId) {
+    const event = events.find((e) => e._id === eventId);
+    if (event) {
+      setPendingRegisterEvent(event);
+    }
+  }
+
+  // insp-verified
+  async function executeRegister(eventId) {
     setRegisteringId(eventId);
     setRegisterError('');
     setRegisterSuccess('');
@@ -93,11 +113,17 @@ function StudentDashboard({ user }) {
         body: JSON.stringify({ eventId }),
       });
 
-      const eventName = events.find((e) => e._id === eventId)?.name || 'event';
+      const eventObj = events.find((e) => e._id === eventId);
+      const eventName = eventObj?.name || 'event';
       setRegisterSuccess(`Successfully registered for "${eventName}"!`);
 
-      // Refresh both lists so UI reflects the new registration
-      await Promise.all([fetchEvents(), fetchMyRegistrations()]);
+      // Optimistic UI: immediately add this registration so the button flips to "Registered ✓"
+      if (eventObj) {
+        setMyRegs((prev) => [...prev, { _id: `temp-${eventId}`, event: eventObj, registeredAt: new Date().toISOString() }]);
+      }
+
+      // Refresh both lists silently in the background to sync with the real server data
+      Promise.all([fetchEvents(true), fetchMyRegistrations(true)]).catch(err => console.log("insp-err", err));
     } catch (err) {
       console.log("insp-err", err);
       setRegisterError(err.message || 'Registration failed');
@@ -117,7 +143,7 @@ function StudentDashboard({ user }) {
         <h1 className="section-title">Student Dashboard</h1>
 
         {/* Tabs */}
-        <div className="tabs" role="tablist">
+        <div className="tabs" role="tablist" style={{ marginBottom: '2rem' }}>
           <button
             id="tab-browse"
             className={`tab ${activeTab === 'browse' ? 'active' : ''}`}
@@ -242,6 +268,18 @@ function StudentDashboard({ user }) {
           </>
         )}
       </main>
+
+      <ConfirmModal
+        isOpen={!!pendingRegisterEvent}
+        title="Confirm Registration"
+        message={`Are you sure you want to register for "${pendingRegisterEvent?.name}"?`}
+        onConfirm={async () => {
+          const eventId = pendingRegisterEvent._id;
+          setPendingRegisterEvent(null);
+          await executeRegister(eventId);
+        }}
+        onCancel={() => setPendingRegisterEvent(null)}
+      />
     </div>
   );
 }

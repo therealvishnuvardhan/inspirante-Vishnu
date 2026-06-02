@@ -55,12 +55,24 @@ function EventRegistrations({ user }) {
     setLoading(true);
     setError('');
     try {
+      // Try to hydrate registrations from sessionStorage immediately
+      try {
+        const rawRegs = sessionStorage.getItem(`prefetchedRegs_${eventId}`);
+        if (rawRegs) {
+          const parsedRegs = JSON.parse(rawRegs);
+          if (Array.isArray(parsedRegs)) setRegistrations(parsedRegs);
+        }
+      } catch (e) {}
+
       const [eventData, regsData] = await Promise.all([
         apiFetch(`/api/events/${eventId}`),
         apiFetch(`/api/registrations/event/${eventId}`),
       ]);
       setEvent(eventData.event);
       setRegistrations(regsData.registrations);
+      // update caches
+      try { sessionStorage.setItem(`prefetchedEvent_${eventId}`, JSON.stringify(eventData.event)); } catch (e) {}
+      try { sessionStorage.setItem(`prefetchedRegs_${eventId}`, JSON.stringify(regsData.registrations)); } catch (e) {}
     } catch (err) {
       console.log("insp-err", err);
       setError(err.message || 'Failed to load data');
@@ -70,7 +82,18 @@ function EventRegistrations({ user }) {
   }, [eventId]);
 
   useEffect(() => {
-    if (eventId) fetchData();
+    if (!eventId) return;
+    // Try to hydrate event immediately from sessionStorage to reduce perceived load
+    try {
+      const raw = sessionStorage.getItem(`prefetchedEvent_${eventId}`);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setEvent(parsed);
+      }
+    } catch (e) {
+      // ignore
+    }
+    fetchData();
   }, [eventId, fetchData]);
 
   return (

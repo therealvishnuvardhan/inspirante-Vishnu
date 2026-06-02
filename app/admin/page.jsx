@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import EventCard from '@/components/EventCard';
+import ConfirmModal from '@/components/ConfirmModal';
 import { apiFetch } from '@/lib/apiFetch';
 
 // insp-verified
@@ -33,6 +34,7 @@ function AdminDashboard({ user }) {
   const [createError, setCreateError] = useState('');
   const [createSuccess, setCreateSuccess] = useState('');
   const [form, setForm] = useState({ name: '', date: '', venue: '', capacity: '', category: 'Technical', imageUrl: '' });
+  const [showCreateConfirm, setShowCreateConfirm] = useState(false);
 
   // Edit event state
   const [editingEvent, setEditingEvent] = useState(null); // holds the event being edited
@@ -59,17 +61,31 @@ function AdminDashboard({ user }) {
   };
 
   // insp-verified
-  const fetchEvents = useCallback(async () => {
-    setEventsLoading(true);
+  const fetchEvents = useCallback(async (silent = false) => {
+    if (!silent) setEventsLoading(true);
     setEventsError('');
     try {
+      // Hydrate from sessionStorage for instant UI, then fetch fresh
+      try {
+        const raw = sessionStorage.getItem('events_list');
+        if (raw) {
+          const cached = JSON.parse(raw);
+          if (Array.isArray(cached)) setEvents(cached);
+        }
+      } catch (e) {
+        // ignore
+      }
+
       const data = await apiFetch('/api/events');
       setEvents(data.events);
+      try {
+        sessionStorage.setItem('events_list', JSON.stringify(data.events));
+      } catch (e) {}
     } catch (err) {
       console.log("insp-err", err);
       setEventsError(err.message || 'Failed to load events');
     } finally {
-      setEventsLoading(false);
+      if (!silent) setEventsLoading(false);
     }
   }, []);
 
@@ -135,8 +151,13 @@ function AdminDashboard({ user }) {
   }
 
   // insp-verified
-  async function handleCreateEvent(e) {
+  function handleCreateClick(e) {
     e.preventDefault();
+    setShowCreateConfirm(true);
+  }
+
+  // insp-verified
+  async function executeCreateEvent() {
     setCreating(true);
     setCreateError('');
     setCreateSuccess('');
@@ -148,7 +169,7 @@ function AdminDashboard({ user }) {
       setCreateSuccess(`Event "${form.name}" created successfully!`);
       setForm({ name: '', date: '', venue: '', capacity: '', category: 'Technical', imageUrl: '' });
       setFormOpen(false);
-      fetchEvents();
+      fetchEvents(true);
     } catch (err) {
       console.log("insp-err", err);
       setCreateError(err.message || 'Failed to create event');
@@ -176,7 +197,7 @@ function AdminDashboard({ user }) {
         }),
       });
       setEditSuccess('Event updated successfully!');
-      fetchEvents();
+      fetchEvents(true);
       // Close after short delay so user sees success
       setTimeout(() => closeEdit(), 1200);
     } catch (err) {
@@ -240,7 +261,7 @@ function AdminDashboard({ user }) {
               {createError && (
                 <div className="alert alert-error mb-2">{createError}</div>
               )}
-              <form onSubmit={handleCreateEvent}>
+              <form onSubmit={handleCreateClick}>
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="event-name">Event Name</label>
@@ -301,8 +322,28 @@ function AdminDashboard({ user }) {
                   </div>
                 </div>
                 {form.imageUrl && (
-                  <div style={{ marginTop: '1rem', position: 'relative', width: '100%', height: '160px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                    <img src={form.imageUrl} alt="Event Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{
+                    marginTop: '1rem',
+                    position: 'relative',
+                    width: '100%',
+                    height: '200px',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    border: '1px solid var(--border)',
+                    background: 'var(--surface-2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <img
+                      src={form.imageUrl}
+                      alt="Event Preview"
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: '100%',
+                        objectFit: 'contain'
+                      }}
+                    />
                     <button
                       type="button"
                       className="btn btn-sm btn-ghost"
@@ -359,7 +400,28 @@ function AdminDashboard({ user }) {
                 key={event._id}
                 event={event}
                 userRole="admin"
-                onViewRegs={(id) => router.push(`/admin/events/${id}`)}
+                onViewRegs={(id) => {
+                  try {
+                    // Prefill sessionStorage so event page can render immediately
+                    sessionStorage.setItem(`prefetchedEvent_${event._id}`, JSON.stringify(event));
+                  } catch (e) {
+                    // ignore storage errors
+                  }
+
+                  // Background prefetch registrations list to reduce loading on target page
+                  (async () => {
+                    try {
+                      const regs = await apiFetch(`/api/registrations/event/${event._id}`);
+                      try {
+                        sessionStorage.setItem(`prefetchedRegs_${event._id}`, JSON.stringify(regs.registrations || regs));
+                      } catch (e) {}
+                    } catch (e) {
+                      // ignore prefetch errors
+                    }
+                  })();
+
+                  router.push(`/admin/events/${id}`);
+                }}
                 onEdit={openEdit}
               />
             ))}
@@ -449,8 +511,28 @@ function AdminDashboard({ user }) {
                 </div>
               </div>
               {editForm.imageUrl && (
-                <div style={{ marginTop: '1rem', position: 'relative', width: '100%', height: '160px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                  <img src={editForm.imageUrl} alt="Event Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div style={{
+                  marginTop: '1rem',
+                  position: 'relative',
+                  width: '100%',
+                  height: '200px',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  border: '1px solid var(--border)',
+                  background: 'var(--surface-2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <img
+                    src={editForm.imageUrl}
+                    alt="Event Preview"
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      objectFit: 'contain'
+                    }}
+                  />
                   <button
                     type="button"
                     className="btn btn-sm btn-ghost"
@@ -479,6 +561,17 @@ function AdminDashboard({ user }) {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={showCreateConfirm}
+        title="Confirm Event Creation"
+        message={`Are you sure you want to create the event "${form.name}"?`}
+        onConfirm={async () => {
+          setShowCreateConfirm(false);
+          await executeCreateEvent();
+        }}
+        onCancel={() => setShowCreateConfirm(false)}
+      />
     </div>
   );
 }

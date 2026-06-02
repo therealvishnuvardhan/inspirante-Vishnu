@@ -542,7 +542,26 @@ a:hover {
 }
 
 .card-visual-capacity {
-  display: none;
+  display: block;
+}
+
+/* Back link (small pill) matching theme */
+.back-link {
+  display: inline-block;
+  padding: 0.45rem 0.75rem;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-bottom: 1rem;
+}
+.back-link:hover {
+  background: rgba(192,132,252,0.10);
+  color: var(--primary);
+  transform: translateY(-1px);
 }
 
 .card-visual-footer {

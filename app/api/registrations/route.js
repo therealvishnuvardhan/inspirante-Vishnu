@@ -34,7 +34,7 @@ export async function POST(req) {
     if (!event) {
       return NextResponse.json(
         { status: 'error', payload: { error: 'Event not found' } },
-        { status: 443 } // Return a clear error code (or 404)
+        { status: 404 }
       );
     }
 
