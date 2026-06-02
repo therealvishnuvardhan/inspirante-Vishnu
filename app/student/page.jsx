@@ -37,6 +37,7 @@ function StudentDashboard({ user }) {
   const [registerError, setRegisterError] = useState('');
   const [registerSuccess, setRegisterSuccess] = useState('');
   const [pendingRegisterEvent, setPendingRegisterEvent] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // insp-verified
   const formatDate = (dateStr) => {
@@ -52,24 +53,37 @@ function StudentDashboard({ user }) {
   const fetchEvents = useCallback(async (silent = false) => {
     if (!silent) setEventsLoading(true);
     setEventsError('');
-    try {
-      // Hydrate from sessionStorage for instant UI
+
+    let hydratedFromCache = false;
+    if (!silent) {
       try {
         const raw = sessionStorage.getItem('events_list');
         if (raw) {
           const cached = JSON.parse(raw);
-          if (Array.isArray(cached)) setEvents(cached);
+          if (Array.isArray(cached)) {
+            setEvents(cached);
+            hydratedFromCache = true;
+            setEventsLoading(false);
+          }
         }
-      } catch (e) {}
+      } catch (e) {
+        console.log('insp-err', e);
+      }
+    }
 
+    try {
       const data = await apiFetch('/api/events');
       setEvents(data.events);
-      try { sessionStorage.setItem('events_list', JSON.stringify(data.events)); } catch (e) {}
+      try {
+        sessionStorage.setItem('events_list', JSON.stringify(data.events));
+      } catch (e) {
+        console.log('insp-err', e);
+      }
     } catch (err) {
-      console.log("insp-err", err);
+      console.log('insp-err', err);
       setEventsError(err.message || 'Failed to load events');
     } finally {
-      if (!silent) setEventsLoading(false);
+      if (!silent && !hydratedFromCache) setEventsLoading(false);
     }
   }, []);
 
@@ -93,6 +107,14 @@ function StudentDashboard({ user }) {
     fetchMyRegistrations();
   }, [fetchEvents, fetchMyRegistrations]);
 
+  const filteredEvents = events.filter((event) => {
+    if (!searchTerm.trim()) return true;
+    const normalized = searchTerm.trim().toLowerCase();
+    return [event.name, event.venue, event.category].some((value) =>
+      String(value || '').toLowerCase().includes(normalized)
+    );
+  });
+
   // insp-verified
   function handleRegister(eventId) {
     const event = events.find((e) => e._id === eventId);
@@ -107,26 +129,57 @@ function StudentDashboard({ user }) {
     setRegisterError('');
     setRegisterSuccess('');
 
+    const eventObj = events.find((e) => e._id === eventId);
+    const tempRegId = `temp-${eventId}`;
+
+    if (eventObj) {
+      setMyRegs((prev) => [
+        ...prev,
+        { _id: tempRegId, event: eventObj, registeredAt: new Date().toISOString() },
+      ]);
+
+      setEvents((prevEvents) =>
+        prevEvents.map((eventItem) =>
+          eventItem._id === eventId
+            ? {
+                ...eventItem,
+                registeredCount: (eventItem.registeredCount || 0) + 1,
+                isFull: ((eventItem.registeredCount || 0) + 1) >= eventItem.capacity,
+              }
+            : eventItem
+        )
+      );
+    }
+
     try {
       await apiFetch('/api/registrations', {
         method: 'POST',
         body: JSON.stringify({ eventId }),
       });
 
-      const eventObj = events.find((e) => e._id === eventId);
       const eventName = eventObj?.name || 'event';
       setRegisterSuccess(`Successfully registered for "${eventName}"!`);
 
-      // Optimistic UI: immediately add this registration so the button flips to "Registered ✓"
-      if (eventObj) {
-        setMyRegs((prev) => [...prev, { _id: `temp-${eventId}`, event: eventObj, registeredAt: new Date().toISOString() }]);
-      }
-
       // Refresh both lists silently in the background to sync with the real server data
-      Promise.all([fetchEvents(true), fetchMyRegistrations(true)]).catch(err => console.log("insp-err", err));
+      Promise.all([fetchEvents(true), fetchMyRegistrations(true)]).catch((err) => console.log('insp-err', err));
     } catch (err) {
       console.log("insp-err", err);
       setRegisterError(err.message || 'Registration failed');
+
+      if (eventObj) {
+        setMyRegs((prev) => prev.filter((reg) => reg._id !== tempRegId));
+        setEvents((prevEvents) =>
+          prevEvents.map((eventItem) =>
+            eventItem._id === eventId
+              ? {
+                  ...eventItem,
+                  registeredCount: Math.max((eventItem.registeredCount || 1) - 1, 0),
+                  isFull: Math.max((eventItem.registeredCount || 1) - 1, 0) >= eventItem.capacity,
+                }
+              : eventItem
+          )
+        );
+      }
     } finally {
       setRegisteringId(null);
     }
@@ -142,41 +195,51 @@ function StudentDashboard({ user }) {
       <main className="main-content">
         <h1 className="section-title">Student Dashboard</h1>
 
-        {/* Tabs */}
+        {/* Tabs and search */}
         <div className="tabs" role="tablist" style={{ marginBottom: '2rem' }}>
-          <button
-            id="tab-browse"
-            className={`tab ${activeTab === 'browse' ? 'active' : ''}`}
-            onClick={() => setActiveTab('browse')}
-            role="tab"
-            aria-selected={activeTab === 'browse'}
-          >
-            Browse Events
-          </button>
-          <button
-            id="tab-my-regs"
-            className={`tab ${activeTab === 'my' ? 'active' : ''}`}
-            onClick={() => setActiveTab('my')}
-            role="tab"
-            aria-selected={activeTab === 'my'}
-          >
-            My Registrations{' '}
-            {myRegs.length > 0 && (
-              <span
-                style={{
-                  background: 'var(--text)',
-                  color: 'var(--bg)',
-                  borderRadius: '99px',
-                  padding: '0.05rem 0.45rem',
-                  fontSize: '0.72rem',
-                  marginLeft: '0.35rem',
-                  fontWeight: '600',
-                }}
-              >
-                {myRegs.length}
-              </span>
-            )}
-          </button>
+          <div className="tab-buttons">
+            <button
+              id="tab-browse"
+              className={`tab ${activeTab === 'browse' ? 'active' : ''}`}
+              onClick={() => setActiveTab('browse')}
+              role="tab"
+              aria-selected={activeTab === 'browse'}
+            >
+              Browse Events
+            </button>
+            <button
+              id="tab-my-regs"
+              className={`tab ${activeTab === 'my' ? 'active' : ''}`}
+              onClick={() => setActiveTab('my')}
+              role="tab"
+              aria-selected={activeTab === 'my'}
+            >
+              My Registrations{' '}
+              {myRegs.length > 0 && (
+                <span
+                  style={{
+                    background: 'var(--text)',
+                    color: 'var(--bg)',
+                    borderRadius: '99px',
+                    padding: '0.05rem 0.45rem',
+                    fontSize: '0.72rem',
+                    marginLeft: '0.35rem',
+                    fontWeight: '600',
+                  }}
+                >
+                  {myRegs.length}
+                </span>
+              )}
+            </button>
+          </div>
+          <div className="tabs-search">
+            <input
+              type="search"
+              placeholder="Search events..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
 
         {/* Feedback messages */}
@@ -203,7 +266,7 @@ function StudentDashboard({ user }) {
               </div>
             ) : (
               <div className="events-grid">
-                {events.map((event) => (
+                {filteredEvents.map((event) => (
                   <EventCard
                     key={event._id}
                     event={event}

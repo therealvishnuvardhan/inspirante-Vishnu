@@ -27,6 +27,7 @@ function AdminDashboard({ user }) {
   const [events, setEvents] = useState([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Create event form state
   const [formOpen, setFormOpen] = useState(false);
@@ -209,6 +210,14 @@ function AdminDashboard({ user }) {
   }
 
   // Stats
+  const filteredEvents = events.filter((event) => {
+    if (!searchTerm.trim()) return true;
+    const normalized = searchTerm.trim().toLowerCase();
+    return [event.name, event.venue, event.category].some((value) =>
+      String(value || '').toLowerCase().includes(normalized)
+    );
+  });
+
   const totalRegistrations = events.reduce((s, e) => s + e.registeredCount, 0);
   const fullEvents = events.filter((e) => e.isFull).length;
 

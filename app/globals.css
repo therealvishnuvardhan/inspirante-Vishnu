@@ -195,7 +195,89 @@ a:hover {
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.navbar-search {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  flex-shrink: 0;
+  max-width: 260px;
+}
+
+.navbar-search input {
+  width: 180px;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  outline: none;
+  min-width: 0;
+}
+
+.navbar-search input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.filter-row,
+.page-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.tabs-search {
+  display: flex;
+  align-items: center;
+  flex: 0 0 280px;
+  width: auto;
+  max-width: 300px;
+  min-width: 220px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  flex-shrink: 0;
+}
+
+.tabs-search:focus-within {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+
+.tabs-search input {
+  width: 100%;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  min-width: 0;
+}
+
+.tabs-search input:focus {
+  box-shadow: none;
+  outline: none;
+  background: transparent;
+  border: none;
+}
+
+
+.tabs-search input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.admin-search {
+  max-width: 240px;
 }
 
 .navbar-user {
@@ -658,7 +740,7 @@ a:hover {
 .capacity-fill {
   height: 100%;
   border-radius: var(--radius);
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.16s ease;
 }
 
 .capacity-fill.green { background: var(--green); }
@@ -805,26 +887,34 @@ select option {
 }
 
 /* ── Tabs & Search Filter ────────────────────────────────────── */
-.filter-row {
+.tabs {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-  margin-top: 1.5rem;
   flex-wrap: wrap;
-}
-
-.tabs {
-  display: flex;
+  gap: 0.75rem;
   background: rgba(255, 255, 255, 0.03);
   padding: 0.35rem;
   border-radius: var(--radius);
   border: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.tab-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .tab {
-  padding: 0.5rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  padding: 0.55rem 1.5rem;
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-2);
