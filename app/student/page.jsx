@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Navbar from '@/components/Navbar';
 import EventCard from '@/components/EventCard';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -25,11 +25,15 @@ function StudentDashboard({ user }) {
   // Events
   const [events, setEvents] = useState([]);
   const [eventsLoading, setEventsLoading] = useState(true);
+  const [displayEventsLoading, setDisplayEventsLoading] = useState(true);
+  const eventsLoadingTimeoutRef = useRef(null);
   const [eventsError, setEventsError] = useState('');
 
   // My registrations
   const [myRegs, setMyRegs] = useState([]);
   const [regsLoading, setRegsLoading] = useState(true);
+  const [displayRegsLoading, setDisplayRegsLoading] = useState(true);
+  const regsLoadingTimeoutRef = useRef(null);
   const [regsError, setRegsError] = useState('');
 
   // Register action
@@ -106,6 +110,35 @@ function StudentDashboard({ user }) {
     fetchEvents();
     fetchMyRegistrations();
   }, [fetchEvents, fetchMyRegistrations]);
+
+  // Debounce loading state: only show spinner after 300ms
+  useEffect(() => {
+    if (eventsLoading) {
+      eventsLoadingTimeoutRef.current = setTimeout(() => {
+        setDisplayEventsLoading(true);
+      }, 300);
+    } else {
+      if (eventsLoadingTimeoutRef.current) clearTimeout(eventsLoadingTimeoutRef.current);
+      setDisplayEventsLoading(false);
+    }
+    return () => {
+      if (eventsLoadingTimeoutRef.current) clearTimeout(eventsLoadingTimeoutRef.current);
+    };
+  }, [eventsLoading]);
+
+  useEffect(() => {
+    if (regsLoading) {
+      regsLoadingTimeoutRef.current = setTimeout(() => {
+        setDisplayRegsLoading(true);
+      }, 300);
+    } else {
+      if (regsLoadingTimeoutRef.current) clearTimeout(regsLoadingTimeoutRef.current);
+      setDisplayRegsLoading(false);
+    }
+    return () => {
+      if (regsLoadingTimeoutRef.current) clearTimeout(regsLoadingTimeoutRef.current);
+    };
+  }, [regsLoading]);
 
   const filteredEvents = events.filter((event) => {
     if (!searchTerm.trim()) return true;
@@ -253,7 +286,7 @@ function StudentDashboard({ user }) {
         {/* Browse Events Tab */}
         {activeTab === 'browse' && (
           <>
-            {eventsLoading ? (
+            {displayEventsLoading ? (
               <div className="spinner-wrap">
                 <div className="spinner" />
                 <span>Loading events…</span>
@@ -284,7 +317,7 @@ function StudentDashboard({ user }) {
         {/* My Registrations Tab */}
         {activeTab === 'my' && (
           <>
-            {regsLoading ? (
+            {displayRegsLoading ? (
               <div className="spinner-wrap">
                 <div className="spinner" />
                 <span>Loading your registrations…</span>
