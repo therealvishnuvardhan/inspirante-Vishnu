@@ -26,6 +26,15 @@ A unified full-stack application built with Next.js (App Router), MongoDB Atlas,
 - Duplicate registration validation preventing double registrations with clear error alerts.
 - Admin-specific restriction: Admins cannot register for events.
 
+- Seamless looping `VideoBackground` on the main layout for an immersive UI.
+- Confirmation modal (`ConfirmModal`) for registration actions (confirm before registering/cancelling).
+- Optimistic UI updates for registrations (instant UI feedback, background sync with server).
+- Client-side search and filtering of events (by name, venue, category).
+- SessionStorage caching of the events list to reduce perceived load times.
+- Debounced loading spinners (only show spinner after short delay to avoid flicker).
+- Visual capacity indicator via `CapacityBar` component with the same color coding used in the admin dashboard.
+- Protected routes (`ProtectedRoute`) enforcing role-based access for student and admin pages.
+
 ---
 
 ## Tech Stack & Architecture
@@ -51,7 +60,7 @@ cp .env.example .env.local
 
 Inside `.env.local`, specify your MongoDB connection string and JWT Secret:
 ```env
-MONGODB_URI=mongodb+srv://VishnuVardhan:Mrsvg%402711@cluster0.sqv3q1c.mongodb.net/event-portal?appName=Cluster0
+MONGODB_URI=mongodb+srv://your_username:your_password@cluster0.sqv3q1c.mongodb.net/event-portal?appName=Cluster0
 JWT_SECRET=any_strong_jwt_secret_key_here
 ```
 *(Note: If your database password contains special characters like `@`, make sure it is URL encoded as `%40` in the connection string).*
@@ -63,7 +72,7 @@ npm install
 ```
 
 ### 4. Seeding the Database
-To populate the database with the required admin credentials, 11 student logins, and 5 initial sample events, run the seed script:
+To populate the database with the required admin credentials, 20 student logins (11 defaults + 9 additional added), and 5 initial sample events, run the seed script:
 ```bash
 npm run seed
 ```
@@ -85,6 +94,7 @@ The portal will be accessible at: [http://localhost:4731](http://localhost:4731)
 - **Password**: `inspirante2026`
 
 ### Student Accounts (Password is `student123` for all)
+The seeded dataset contains 20 student accounts (11 original defaults plus 9 additional accounts added during development):
 - `asha.rao`
 - `ravi.shetty`
 - `meera.nair`
@@ -96,6 +106,15 @@ The portal will be accessible at: [http://localhost:4731](http://localhost:4731)
 - `nisha.prabhu`
 - `tejas.mallya`
 - `priya.bangera`
+- `sanjay.kumar`
+- `sneha.reddy`
+- `rahul.verma`
+- `pooja.sharma`
+- `vikram.singh`
+- `neha.gupta`
+- `arjun.patel`
+- `kavitha.shekar`
+- `manoj.gowda`
 
 ---
 
