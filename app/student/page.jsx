@@ -207,20 +207,36 @@ function StudentDashboard({ user }) {
                 <p>You haven't registered for any events yet.</p>
               </div>
             ) : (
-              <div className="reg-list animate-in">
-                {myRegs.map((reg) => (
-                  <div key={reg._id} className="reg-item">
-                    <div className="reg-item-info">
-                      <div className="reg-item-name">{reg.event?.name}</div>
-                      <div className="reg-item-meta">
-                        {reg.event?.venue} &nbsp;·&nbsp; {formatDate(reg.event?.date)}
+              <div className="events-grid animate-in">
+                {myRegs.map((reg) => {
+                  const enrichedEvent = events.find((e) => e._id === reg.event?._id) || reg.event;
+                  return (
+                    <div key={reg._id} style={{ position: 'relative' }}>
+                      <EventCard
+                        event={enrichedEvent}
+                        userRole="student"
+                        isRegistered={true}
+                      />
+                      <div style={{
+                        position: 'absolute',
+                        top: '12px',
+                        left: '74px',
+                        background: 'rgba(255, 255, 255, 0.12)',
+                        backdropFilter: 'blur(8px)',
+                        padding: '0.35rem 0.75rem',
+                        borderRadius: '20px',
+                        fontSize: '0.7rem',
+                        fontWeight: '700',
+                        color: 'var(--text)',
+                        border: '1px solid rgba(255,255,255,0.15)',
+                        zIndex: 3,
+                        fontFamily: 'system-ui, -apple-system, sans-serif'
+                      }}>
+                        Joined {formatDate(reg.registeredAt)}
                       </div>
                     </div>
-                    <div className="reg-item-date">
-                      Registered {formatDate(reg.registeredAt)}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </>

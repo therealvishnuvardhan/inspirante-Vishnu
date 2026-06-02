@@ -19,6 +19,13 @@ const EventSchema = new mongoose.Schema(
       required: true,
       min: 1,
     },
+    imageUrl: {
+      type: String,
+    },
+    category: {
+      type: String,
+      default: 'Technical',
+    },
   },
   { timestamps: true }
 );

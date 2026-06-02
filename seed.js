@@ -40,6 +40,8 @@ const EventSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   venue: { type: String, required: true },
   capacity: { type: Number, required: true, min: 1 },
+  imageUrl: { type: String },
+  category: { type: String, default: 'Technical' },
 });
 
 const RegistrationSchema = new mongoose.Schema({
@@ -133,30 +135,40 @@ async function seed() {
         date: new Date('2026-07-10T00:00:00Z'),
         venue: 'Main Auditorium',
         capacity: 120,
+        category: 'Technical',
+        imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=600&auto=format&fit=crop',
       },
       {
         name: 'Hackathon',
         date: new Date('2026-07-15T00:00:00Z'),
         venue: 'Lab Block C',
         capacity: 40,
+        category: 'Technical',
+        imageUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=600&auto=format&fit=crop',
       },
       {
         name: 'Cultural Fest',
         date: new Date('2026-07-20T00:00:00Z'),
         venue: 'Open Amphitheatre',
         capacity: 300,
+        category: 'Non Technical',
+        imageUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop',
       },
       {
         name: 'Workshop: React Basics',
         date: new Date('2026-07-22T00:00:00Z'),
         venue: 'Seminar Hall 2',
         capacity: 30,
+        category: 'Technical',
+        imageUrl: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=600&auto=format&fit=crop',
       },
       {
         name: 'Placement Prep Talk',
         date: new Date('2026-07-25T00:00:00Z'),
         venue: 'Main Auditorium',
         capacity: 200,
+        category: 'Non Technical',
+        imageUrl: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=600&auto=format&fit=crop',
       },
     ];
 

@@ -25,7 +25,7 @@ export default function Navbar({ user }) {
             <span style={{ position: 'absolute', width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--text)', bottom: 0, left: '50%', transform: 'translateX(-50%)', opacity: 0.8 }}></span>
           </div>
         </div>
-        <span>Event Portal</span>
+        <span>EventNest</span>
       </div>
 
       <div className="navbar-right">
@@ -45,9 +45,6 @@ export default function Navbar({ user }) {
           </>
         ) : (
           <>
-            <a href="#about" className="btn btn-ghost btn-sm" style={{ border: 'none', background: 'transparent', color: 'var(--text-2)', fontSize: '0.85rem' }}>
-              About
-            </a>
             <button className="btn btn-outline btn-sm" style={{ border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 0 10px rgba(255,255,255,0.02)' }} onClick={() => router.push('/login')}>
               Login
             </button>

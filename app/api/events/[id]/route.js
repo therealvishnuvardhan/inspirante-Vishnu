@@ -66,13 +66,15 @@ export async function PATCH(req, { params }) {
     }
 
     const body = await req.json();
-    const { name, date, venue, capacity } = body;
+    const { name, date, venue, capacity, category, imageUrl } = body;
 
     // Build only the fields that were provided
     const updates = {};
     if (name)     updates.name  = name;
     if (date)     updates.date  = new Date(date);
     if (venue)    updates.venue = venue;
+    if (category) updates.category = category;
+    if (imageUrl) updates.imageUrl = imageUrl;
     if (capacity) {
       const parsed = Number(capacity);
       if (isNaN(parsed) || parsed <= 0) {

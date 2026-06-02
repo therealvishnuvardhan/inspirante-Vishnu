@@ -2,7 +2,7 @@ import './globals.css';
 import VideoBackground from '@/components/VideoBackground';
 
 export const metadata = {
-  title: 'Event Portal — College Event Registration',
+  title: 'EventNest — College Event Registration',
   description: 'College Event Registration Portal for students and administrators',
 };
 

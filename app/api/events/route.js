@@ -50,7 +50,7 @@ export async function POST(req) {
     const { errorResponse } = requireAdmin(req);
     if (errorResponse) return errorResponse;
 
-    const { name, date, venue, capacity } = await req.json();
+    const { name, date, venue, capacity, category, imageUrl } = await req.json();
 
     if (!name || !date || !venue || !capacity) {
       return NextResponse.json(
@@ -67,11 +67,47 @@ export async function POST(req) {
       );
     }
 
+    // Determine category and imageUrl defaults if not explicitly provided
+    let finalCategory = category;
+    let finalImageUrl = imageUrl;
+
+    if (!finalCategory) {
+      const lowerName = name.toLowerCase();
+      if (
+        lowerName.includes('tech') ||
+        lowerName.includes('hackathon') ||
+        lowerName.includes('code') ||
+        lowerName.includes('workshop') ||
+        lowerName.includes('react') ||
+        lowerName.includes('dev') ||
+        lowerName.includes('program')
+      ) {
+        finalCategory = 'Technical';
+      } else {
+        finalCategory = 'Non Technical';
+      }
+    }
+
+    if (!finalImageUrl) {
+      const lowerName = name.toLowerCase();
+      if (lowerName.includes('hackathon') || lowerName.includes('code') || lowerName.includes('dev')) {
+        finalImageUrl = 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=600&auto=format&fit=crop';
+      } else if (lowerName.includes('workshop') || lowerName.includes('react') || lowerName.includes('symposium') || lowerName.includes('tech')) {
+        finalImageUrl = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=600&auto=format&fit=crop';
+      } else if (lowerName.includes('fest') || lowerName.includes('cultural') || lowerName.includes('dance') || lowerName.includes('music')) {
+        finalImageUrl = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop';
+      } else {
+        finalImageUrl = 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=600&auto=format&fit=crop';
+      }
+    }
+
     const newEvent = await Event.create({
       name,
       date: new Date(date),
       venue,
       capacity: parsedCapacity,
+      category: finalCategory,
+      imageUrl: finalImageUrl,
     });
 
     return NextResponse.json({

@@ -8,6 +8,11 @@ import { apiFetch } from '@/lib/apiFetch';
 export default function LoginPage() {
   console.log("insp-riverstone");
   const router = useRouter();
+  
+  // Toggle state between student and admin
+  const [role, setRole] = useState('student');
+  
+  // Login input states
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -43,6 +48,24 @@ export default function LoginPage() {
 
   return (
     <div className="login-screen">
+      {/* Back to Home */}
+      <button
+        className="btn btn-ghost btn-sm"
+        onClick={() => router.push('/')}
+        style={{
+          position: 'fixed',
+          top: '1.25rem',
+          left: '1.25rem',
+          zIndex: 10,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.4rem',
+          fontSize: '0.85rem',
+        }}
+      >
+        ← Home
+      </button>
+
       <div className="login-box animate-in">
         {/* Logo */}
         <div className="login-header">
@@ -54,11 +77,48 @@ export default function LoginPage() {
               <span style={{ position: 'absolute', width: '5px', height: '5px', borderRadius: '50%', backgroundColor: 'var(--primary)', bottom: 0, left: '50%', transform: 'translateX(-50%)', opacity: 0.8 }}></span>
             </div>
           </div>
-          <h1 className="login-title">Event Portal</h1>
-          <p className="login-subtitle">College Event Registration System</p>
+          <h1 className="login-title">EventNest</h1>
+          <p className="login-subtitle">
+            {role === 'admin' ? 'Admin Sign In Portal' : 'Student Sign In Portal'}
+          </p>
         </div>
 
-        {/* Error */}
+        {/* Sliding 2-Option Selector Switch */}
+        <div className="radio-group">
+          <div className="slider"></div>
+          <div className="radio-option">
+            <input 
+              type="radio" 
+              name="role" 
+              id="role-student" 
+              checked={role === 'student'} 
+              onChange={() => {
+                setRole('student');
+                setError('');
+                setUsername('');
+                setPassword('');
+              }} 
+            />
+            <label htmlFor="role-student" className="radio-label">Student</label>
+          </div>
+          <div className="radio-option">
+            <input 
+              type="radio" 
+              name="role" 
+              id="role-admin" 
+              checked={role === 'admin'} 
+              onChange={() => {
+                setRole('admin');
+                setError('');
+                setUsername('');
+                setPassword('');
+              }} 
+            />
+            <label htmlFor="role-admin" className="radio-label">Admin</label>
+          </div>
+        </div>
+
+        {/* Error Alert */}
         {error && (
           <div className="alert alert-error" role="alert">
             {error}
@@ -74,7 +134,7 @@ export default function LoginPage() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="e.g. admin or asha.rao"
+              placeholder={role === 'admin' ? 'e.g. admin' : 'e.g. asha.rao'}
               required
               autoComplete="username"
               autoFocus
@@ -88,7 +148,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder="Enter password"
               required
               autoComplete="current-password"
             />
@@ -104,17 +164,21 @@ export default function LoginPage() {
           </button>
         </form>
 
+        {/* Helper Credentials Box */}
         <div style={{ fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.8, textAlign: 'center', marginTop: '2rem' }}>
-          <div>
-            <span>Admin:</span>{' '}
-            <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>admin</code> /{' '}
-            <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>inspirante2026</code>
-          </div>
-          <div style={{ marginTop: '0.25rem' }}>
-            <span>Student:</span>{' '}
-            <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>asha.rao</code> /{' '}
-            <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>student123</code>
-          </div>
+          {role === 'student' ? (
+            <div>
+              <span>Student:</span>{' '}
+              <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>asha.rao</code> /{' '}
+              <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>student123</code>
+            </div>
+          ) : (
+            <div>
+              <span>Admin:</span>{' '}
+              <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>admin</code> /{' '}
+              <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>inspirante2026</code>
+            </div>
+          )}
         </div>
       </div>
     </div>

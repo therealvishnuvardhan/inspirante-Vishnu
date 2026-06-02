@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
-import CapacityBar from '@/components/CapacityBar';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import EventCard from '@/components/EventCard';
 import { apiFetch } from '@/lib/apiFetch';
 
 // insp-verified
@@ -32,11 +32,11 @@ function AdminDashboard({ user }) {
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
   const [createSuccess, setCreateSuccess] = useState('');
-  const [form, setForm] = useState({ name: '', date: '', venue: '', capacity: '' });
+  const [form, setForm] = useState({ name: '', date: '', venue: '', capacity: '', category: 'Technical', imageUrl: '' });
 
   // Edit event state
   const [editingEvent, setEditingEvent] = useState(null); // holds the event being edited
-  const [editForm, setEditForm] = useState({ name: '', date: '', venue: '', capacity: '' });
+  const [editForm, setEditForm] = useState({ name: '', date: '', venue: '', capacity: '', category: 'Technical', imageUrl: '' });
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState('');
   const [editSuccess, setEditSuccess] = useState('');
@@ -87,6 +87,30 @@ function AdminDashboard({ user }) {
     setEditForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
+  function handleFileChange(e, isEdit = false) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    if (file.size > 3 * 1024 * 1024) {
+      if (isEdit) {
+        setEditError('Image size should be less than 3MB');
+      } else {
+        setCreateError('Image size should be less than 3MB');
+      }
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (isEdit) {
+        setEditForm((prev) => ({ ...prev, imageUrl: reader.result }));
+      } else {
+        setForm((prev) => ({ ...prev, imageUrl: reader.result }));
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
   // Open edit modal pre-filled with the selected event's current values
   // insp-verified
   function openEdit(event) {
@@ -96,6 +120,8 @@ function AdminDashboard({ user }) {
       date:     toInputDate(event.date),
       venue:    event.venue,
       capacity: String(event.capacity),
+      category: event.category || 'Technical',
+      imageUrl: event.imageUrl || '',
     });
     setEditError('');
     setEditSuccess('');
@@ -120,7 +146,7 @@ function AdminDashboard({ user }) {
         body: JSON.stringify({ ...form, capacity: Number(form.capacity) }),
       });
       setCreateSuccess(`Event "${form.name}" created successfully!`);
-      setForm({ name: '', date: '', venue: '', capacity: '' });
+      setForm({ name: '', date: '', venue: '', capacity: '', category: 'Technical', imageUrl: '' });
       setFormOpen(false);
       fetchEvents();
     } catch (err) {
@@ -145,6 +171,8 @@ function AdminDashboard({ user }) {
           date:     editForm.date,
           venue:    editForm.venue,
           capacity: Number(editForm.capacity),
+          category: editForm.category,
+          imageUrl: editForm.imageUrl,
         }),
       });
       setEditSuccess('Event updated successfully!');
@@ -237,7 +265,63 @@ function AdminDashboard({ user }) {
                       value={form.capacity} onChange={handleFormChange} placeholder="e.g. 100" required />
                   </div>
                 </div>
-                <div className="flex-center" style={{ gap: '0.75rem', marginTop: '0.5rem' }}>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="event-category">Category</label>
+                    <CustomSelect
+                      id="event-category"
+                      name="category"
+                      value={form.category}
+                      onChange={handleFormChange}
+                      options={[
+                        { value: 'Technical', label: 'Technical' },
+                        { value: 'Non Technical', label: 'Non Technical' }
+                      ]}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="event-image">Event Banner Image</label>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <input
+                        id="event-image"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileChange(e, false)}
+                        style={{ display: 'none' }}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-outline"
+                        style={{ width: '100%' }}
+                        onClick={() => document.getElementById('event-image').click()}
+                      >
+                        Choose Local Image
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {form.imageUrl && (
+                  <div style={{ marginTop: '1rem', position: 'relative', width: '100%', height: '160px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                    <img src={form.imageUrl} alt="Event Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-ghost"
+                      style={{
+                        position: 'absolute',
+                        top: '8px',
+                        right: '8px',
+                        background: 'rgba(0, 0, 0, 0.7)',
+                        color: 'var(--text)',
+                        borderRadius: 'var(--radius)',
+                        padding: '0.2rem 0.6rem'
+                      }}
+                      onClick={() => setForm((prev) => ({ ...prev, imageUrl: '' }))}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+                <div className="flex-center" style={{ gap: '0.75rem', marginTop: '1rem' }}>
                   <button id="create-event-btn" type="submit" className="btn btn-primary" disabled={creating}>
                     {creating ? 'Creating…' : 'Create Event'}
                   </button>
@@ -254,7 +338,7 @@ function AdminDashboard({ user }) {
           <div className="alert alert-success animate-in">{createSuccess}</div>
         )}
 
-        {/* Events Table */}
+        {/* Events Cards Grid */}
         <h2 className="section-title">All Events</h2>
 
         {eventsLoading ? (
@@ -269,67 +353,16 @@ function AdminDashboard({ user }) {
             <p>No events yet. Create the first one above.</p>
           </div>
         ) : (
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Event</th>
-                  <th>Date</th>
-                  <th>Venue</th>
-                  <th>Registrations</th>
-                  <th>Capacity Fill</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {events.map((event) => {
-                  const pct = event.capacity > 0
-                    ? Math.round((event.registeredCount / event.capacity) * 100)
-                    : 0;
-                  const colorClass = pct >= 80 ? 'red' : pct >= 50 ? 'amber' : 'green';
-
-                  return (
-                    <tr key={event._id}>
-                      <td><strong>{event.name}</strong></td>
-                      <td className="td-muted">{formatDate(event.date)}</td>
-                      <td className="td-muted">{event.venue}</td>
-                      <td>{event.registeredCount} / {event.capacity}</td>
-                      <td style={{ minWidth: '140px' }}>
-                        <CapacityBar registered={event.registeredCount} capacity={event.capacity} />
-                      </td>
-                      <td>
-                        {event.isFull ? (
-                          <span className="badge-full">Full</span>
-                        ) : (
-                          <span style={{ color: `var(--${colorClass})`, fontSize: '0.78rem', fontWeight: 600 }}>
-                            {pct}% filled
-                          </span>
-                        )}
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                          <button
-                            className="btn btn-outline btn-sm"
-                            onClick={() => router.push(`/admin/events/${event._id}`)}
-                            id={`view-regs-${event._id}`}
-                          >
-                            Registrations
-                          </button>
-                          <button
-                            className="btn btn-ghost btn-sm"
-                            onClick={() => openEdit(event)}
-                            id={`edit-event-${event._id}`}
-                          >
-                            Edit
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className="events-grid">
+            {events.map((event) => (
+              <EventCard
+                key={event._id}
+                event={event}
+                userRole="admin"
+                onViewRegs={(id) => router.push(`/admin/events/${id}`)}
+                onEdit={openEdit}
+              />
+            ))}
           </div>
         )}
       </main>
@@ -380,6 +413,62 @@ function AdminDashboard({ user }) {
                 <input id="edit-venue" name="venue" type="text"
                   value={editForm.venue} onChange={handleEditFormChange} required />
               </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="edit-category">Category</label>
+                  <CustomSelect
+                    id="edit-category"
+                    name="category"
+                    value={editForm.category}
+                    onChange={handleEditFormChange}
+                    options={[
+                      { value: 'Technical', label: 'Technical' },
+                      { value: 'Non Technical', label: 'Non Technical' }
+                    ]}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="edit-image">Event Banner Image</label>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <input
+                      id="edit-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange(e, true)}
+                      style={{ display: 'none' }}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-outline"
+                      style={{ width: '100%' }}
+                      onClick={() => document.getElementById('edit-image').click()}
+                    >
+                      Choose Local Image
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {editForm.imageUrl && (
+                <div style={{ marginTop: '1rem', position: 'relative', width: '100%', height: '160px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                  <img src={editForm.imageUrl} alt="Event Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-ghost"
+                    style={{
+                      position: 'absolute',
+                      top: '8px',
+                      right: '8px',
+                      background: 'rgba(0, 0, 0, 0.7)',
+                      color: 'var(--text)',
+                      borderRadius: 'var(--radius)',
+                      padding: '0.2rem 0.6rem'
+                    }}
+                    onClick={() => setEditForm((prev) => ({ ...prev, imageUrl: '' }))}
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
               <div className="flex-center" style={{ gap: '0.75rem', marginTop: '1.25rem' }}>
                 <button id="save-edit-btn" type="submit" className="btn btn-primary" disabled={saving}>
                   {saving ? 'Saving…' : 'Save Changes'}
@@ -389,6 +478,86 @@ function AdminDashboard({ user }) {
             </form>
           </div>
         </div>
+      )}
+    </div>
+  );
+}
+
+// insp-verified
+function CustomSelect({ id, name, value, onChange, options }) {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <div style={{ position: 'relative', width: '100%' }}>
+      <div
+        id={id}
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          background: 'rgba(255, 255, 255, 0.04)',
+          border: '1px solid var(--border)',
+          color: 'var(--text)',
+          padding: '0.85rem 1.5rem',
+          borderRadius: 'var(--radius-lg)',
+          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '0.95rem',
+          userSelect: 'none'
+        }}
+      >
+        <span>{value}</span>
+        <span style={{ fontSize: '0.75rem', transition: 'transform 0.25s', transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', opacity: 0.7 }}>▼</span>
+      </div>
+      
+      {isOpen && (
+        <>
+          <div 
+            style={{ position: 'fixed', inset: 0, zIndex: 999 }} 
+            onClick={() => setIsOpen(false)} 
+          />
+          <div
+            style={{
+              position: 'absolute',
+              top: '105%',
+              left: 0,
+              right: 0,
+              background: 'rgba(15, 15, 25, 0.95)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid var(--border-light)',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              boxShadow: 'var(--shadow)',
+              zIndex: 1000,
+              padding: '4px',
+              animation: 'slideUp 0.15s ease'
+            }}
+          >
+            {options.map((opt) => (
+              <div
+                key={opt.value}
+                onClick={() => {
+                  onChange({ target: { name, value: opt.value } });
+                  setIsOpen(false);
+                }}
+                style={{
+                  padding: '0.75rem 1.25rem',
+                  borderRadius: '12px',
+                  color: value === opt.value ? 'var(--primary)' : 'var(--text)',
+                  background: value === opt.value ? 'rgba(255,255,255,0.06)' : 'transparent',
+                  cursor: 'pointer',
+                  fontSize: '0.92rem',
+                  transition: 'background 0.2s',
+                  textAlign: 'left'
+                }}
+                onMouseEnter={(e) => { if (value !== opt.value) e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+                onMouseLeave={(e) => { if (value !== opt.value) e.currentTarget.style.background = 'transparent'; }}
+              >
+                {opt.label}
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
