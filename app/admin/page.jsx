@@ -81,7 +81,7 @@ function AdminDashboard({ user }) {
       setEvents(data.events);
       try {
         sessionStorage.setItem('events_list', JSON.stringify(data.events));
-      } catch (e) {}
+      } catch (e) { }
     } catch (err) {
       console.log("insp-err", err);
       setEventsError(err.message || 'Failed to load events');
@@ -107,7 +107,7 @@ function AdminDashboard({ user }) {
   function handleFileChange(e, isEdit = false) {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     if (file.size > 3 * 1024 * 1024) {
       if (isEdit) {
         setEditError('Image size should be less than 3MB');
@@ -133,9 +133,9 @@ function AdminDashboard({ user }) {
   function openEdit(event) {
     setEditingEvent(event);
     setEditForm({
-      name:     event.name,
-      date:     toInputDate(event.date),
-      venue:    event.venue,
+      name: event.name,
+      date: toInputDate(event.date),
+      venue: event.venue,
       capacity: String(event.capacity),
       category: event.category || 'Technical',
       imageUrl: event.imageUrl || '',
@@ -189,9 +189,9 @@ function AdminDashboard({ user }) {
       await apiFetch(`/api/events/${editingEvent._id}`, {
         method: 'PATCH',
         body: JSON.stringify({
-          name:     editForm.name,
-          date:     editForm.date,
-          venue:    editForm.venue,
+          name: editForm.name,
+          date: editForm.date,
+          venue: editForm.venue,
           capacity: Number(editForm.capacity),
           category: editForm.category,
           imageUrl: editForm.imageUrl,
@@ -423,7 +423,7 @@ function AdminDashboard({ user }) {
                       const regs = await apiFetch(`/api/registrations/event/${event._id}`);
                       try {
                         sessionStorage.setItem(`prefetchedRegs_${event._id}`, JSON.stringify(regs.registrations || regs));
-                      } catch (e) {}
+                      } catch (e) { }
                     } catch (e) {
                       // ignore prefetch errors
                     }
@@ -458,7 +458,7 @@ function AdminDashboard({ user }) {
               <button className="btn btn-ghost btn-sm" onClick={closeEdit}>Close</button>
             </div>
 
-            {editError   && <div className="alert alert-error mb-2">{editError}</div>}
+            {editError && <div className="alert alert-error mb-2">{editError}</div>}
             {editSuccess && <div className="alert alert-success mb-2">{editSuccess}</div>}
 
             <form onSubmit={handleSaveEdit}>
@@ -594,7 +594,7 @@ function AdminDashboard({ user }) {
 // insp-verified
 function CustomSelect({ id, name, value, onChange, options }) {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   return (
     <div style={{ position: 'relative', width: '100%' }}>
       <div
@@ -617,12 +617,12 @@ function CustomSelect({ id, name, value, onChange, options }) {
         <span>{value}</span>
         <span style={{ fontSize: '0.75rem', transition: 'transform 0.25s', transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', opacity: 0.7 }}>▼</span>
       </div>
-      
+
       {isOpen && (
         <>
-          <div 
-            style={{ position: 'fixed', inset: 0, zIndex: 999 }} 
-            onClick={() => setIsOpen(false)} 
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 999 }}
+            onClick={() => setIsOpen(false)}
           />
           <div
             style={{

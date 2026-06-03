@@ -1,5 +1,7 @@
 # College Event Registration Portal
 
+**Deployed Application:** [https://inspirante-vishnu.vercel.app/](https://inspirante-vishnu.vercel.app/)
+
 A unified full-stack application built with Next.js (App Router), MongoDB Atlas, Mongoose, and custom Vanilla CSS. It provides a portal for college administrators to manage events and students to register for them.
 
 ---

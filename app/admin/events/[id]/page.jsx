@@ -62,7 +62,7 @@ function EventRegistrations({ user }) {
           const parsedRegs = JSON.parse(rawRegs);
           if (Array.isArray(parsedRegs)) setRegistrations(parsedRegs);
         }
-      } catch (e) {}
+      } catch (e) { }
 
       const [eventData, regsData] = await Promise.all([
         apiFetch(`/api/events/${eventId}`),
@@ -71,8 +71,8 @@ function EventRegistrations({ user }) {
       setEvent(eventData.event);
       setRegistrations(regsData.registrations);
       // update caches
-      try { sessionStorage.setItem(`prefetchedEvent_${eventId}`, JSON.stringify(eventData.event)); } catch (e) {}
-      try { sessionStorage.setItem(`prefetchedRegs_${eventId}`, JSON.stringify(regsData.registrations)); } catch (e) {}
+      try { sessionStorage.setItem(`prefetchedEvent_${eventId}`, JSON.stringify(eventData.event)); } catch (e) { }
+      try { sessionStorage.setItem(`prefetchedRegs_${eventId}`, JSON.stringify(regsData.registrations)); } catch (e) { }
     } catch (err) {
       console.log("insp-err", err);
       setError(err.message || 'Failed to load data');
