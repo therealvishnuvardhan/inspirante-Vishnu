@@ -164,22 +164,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Helper Credentials Box */}
-        <div style={{ fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.8, textAlign: 'center', marginTop: '2rem' }}>
-          {role === 'student' ? (
-            <div>
-              <span>Student:</span>{' '}
-              <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>asha.rao</code> /{' '}
-              <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>student123</code>
-            </div>
-          ) : (
-            <div>
-              <span>Admin:</span>{' '}
-              <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>admin</code> /{' '}
-              <code style={{ color: 'var(--primary)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>inspirante2026</code>
-            </div>
-          )}
-        </div>
+        {/* Helper credentials removed for submission privacy */}
       </div>
     </div>
   );

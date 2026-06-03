@@ -2,8 +2,6 @@
 
 A unified full-stack application built with Next.js (App Router), MongoDB Atlas, Mongoose, and custom Vanilla CSS. It provides a portal for college administrators to manage events and students to register for them.
 
-**Submission Reference Code:** `ISP-WEB-2631`
-
 ---
 
 ## Features Implemented
@@ -96,46 +94,6 @@ npm run dev
 ```
 
 The app will be available at http://localhost:4731
-
-
-### 1. Prerequisites
-- [Node.js](https://nodejs.org/) (v18.x or higher recommended)
-- [npm](https://www.npmjs.com/)
-
-### 2. Environment Variables Configuration
-Create a `.env.local` file in the root directory. You can copy the contents of `.env.example`:
-
-```bash
-cp .env.example .env.local
-```
-
-Inside `.env.local`, specify your MongoDB connection string and JWT Secret:
-```env
-MONGODB_URI=mongodb+srv://your_username:your_password@cluster0.sqv3q1c.mongodb.net/event-portal?appName=Cluster0
-JWT_SECRET=any_strong_jwt_secret_key_here
-```
-*(Note: If your database password contains special characters like `@`, make sure it is URL encoded as `%40` in the connection string).*
-
-### 3. Installation
-Install all project dependencies:
-```bash
-npm install
-```
-
-### 4. Seeding the Database
-To populate the database with the required admin credentials, 20 student logins (11 defaults + 9 additional added), and 5 initial sample events, run the seed script:
-```bash
-npm run seed
-```
-
-### 5. Running the Development Server
-Start the Next.js full-stack development server (runs on port `4731` by default):
-```bash
-npm run dev
-```
-
-The portal will be accessible at: [http://localhost:4731](http://localhost:4731).
-
 ---
 
 ## Test Accounts
