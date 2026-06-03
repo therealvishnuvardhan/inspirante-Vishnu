@@ -1131,10 +1131,59 @@ select option {
 
 .landing-stats {
   display: flex;
-  gap: 8rem;
-  justify-content: flex-end;
-  margin-top: 4rem;
+  gap: 5rem;
+  justify-content: center;
+  margin-top: 2rem;
 }
+
+.about-section {
+  margin-top: 8rem;
+  scroll-margin-top: 100px;
+}
+
+.about-title {
+  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.about-desc {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 800px;
+  margin: 0 auto 3rem;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.about-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.about-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
+  color: var(--primary);
+}
+
+.about-card p {
+  color: var(--text-2);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
 
 .stat-item {
   text-align: left;
@@ -1221,22 +1270,109 @@ select option {
 
 /* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .hero-title { font-size: 3.8rem; }
-  .hero-subtitle { font-size: 1.8rem; }
-  .hero-ctas .btn { font-size: 1.4rem; padding: 0.8rem 2rem; }
-  .landing-content { padding-top: 140px; justify-content: flex-start; }
-  .landing-stats { justify-content: flex-start; gap: 3rem; margin-top: 4rem; }
-  .stat-num { font-size: 3.5rem; }
-  .stat-desc { font-size: 1.4rem; }
+  .hero-title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    margin-bottom: 1.25rem;
+  }
+  .hero-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+  .hero-ctas {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-start;
+  }
+  .hero-ctas .btn {
+    font-size: 1rem;
+    padding: 0.7rem 1.5rem;
+  }
+  .landing-content {
+    padding: 120px 1.25rem 3rem;
+    justify-content: flex-start;
+  }
+  .landing-stats {
+    justify-content: center;
+    gap: 2.5rem;
+    margin-top: 3rem;
+  }
+  .stat-num {
+    font-size: 2.4rem;
+  }
+  .stat-desc {
+    font-size: 0.9rem;
+  }
+  .about-section {
+    margin-top: 4.5rem;
+  }
+  .about-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  .about-desc {
+    font-size: 1rem;
+    margin-bottom: 2.25rem;
+  }
+  .about-grid {
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .about-card {
+    padding: 1.5rem;
+  }
+  .navbar-user span:first-child {
+    display: none;
+  }
+  .navbar {
+    padding: 0.5rem 1rem;
+    top: 12px;
+  }
+  .modal-box {
+    padding: 1.5rem;
+  }
+  .tabs-search {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+  table {
+    font-size: 0.82rem;
+  }
+  thead th, tbody td {
+    padding: 0.8rem 1rem;
+  }
   .form-row { grid-template-columns: 1fr; }
   .events-grid { grid-template-columns: 1fr; }
   .stats-row { grid-template-columns: 1fr; }
   .main-content { padding: 110px 1rem 2rem; }
   .tabs { width: 100%; }
   .tab { flex: 1; text-align: center; }
-  .navbar { padding: 0.5rem 1rem; top: 12px; }
   .panel-body { padding: 1.25rem; }
   .login-box { padding: 2.25rem 1.75rem; }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2.1rem;
+  }
+  .hero-subtitle {
+    font-size: 1.02rem;
+  }
+  .hero-ctas {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+  .landing-stats {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .stat-item {
+    text-align: center;
+  }
 }
 
 /* ── Modal Overlay ───────────────────────────────────────────── */
