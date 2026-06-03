@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 4731",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 4731",
+    "start": "next start",
     "seed": "node seed.js"
   },
   "dependencies": {
