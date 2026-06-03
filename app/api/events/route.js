@@ -92,18 +92,8 @@ export async function POST(req) {
       }
     }
 
-    if (!finalImageUrl) {
-      const lowerName = name.toLowerCase();
-      if (lowerName.includes('hackathon') || lowerName.includes('code') || lowerName.includes('dev')) {
-        finalImageUrl = 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=600&auto=format&fit=crop';
-      } else if (lowerName.includes('workshop') || lowerName.includes('react') || lowerName.includes('symposium') || lowerName.includes('tech')) {
-        finalImageUrl = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=600&auto=format&fit=crop';
-      } else if (lowerName.includes('fest') || lowerName.includes('cultural') || lowerName.includes('dance') || lowerName.includes('music')) {
-        finalImageUrl = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop';
-      } else {
-        finalImageUrl = 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=600&auto=format&fit=crop';
-      }
-    }
+    // Only use provided imageUrl, no defaults assigned
+    // If no image is provided, it will show a black background
 
     const newEvent = await Event.create({
       name,

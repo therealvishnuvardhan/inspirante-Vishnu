@@ -23,10 +23,10 @@ export async function GET(req) {
       );
     }
 
-    // Get all registrations for this student, populate event details
+    // Get all registrations for this student, populate event details, sorted by event date
     const registrations = await Registration.find({ student: user.id })
       .populate('event')
-      .sort({ registeredAt: -1 })
+      .sort({ 'event.date': 1 })
       .lean();
 
     return NextResponse.json({

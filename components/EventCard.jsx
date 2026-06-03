@@ -39,8 +39,7 @@ export default function EventCard({
     return months[d.getMonth()];
   };
 
-  const defaultImageUrl = 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=600&auto=format&fit=crop';
-  const cardBgImage = event.imageUrl || defaultImageUrl;
+  const cardBgImage = event.imageUrl || null;
 
   return (
     // insp-verified
@@ -48,7 +47,7 @@ export default function EventCard({
       {/* Background Image Container */}
       <div 
         className="card-visual-bg" 
-        style={{ backgroundImage: `url(${cardBgImage})` }} 
+        style={cardBgImage ? { backgroundImage: `url(${cardBgImage})` } : { backgroundColor: '#000000' }} 
       />
       {/* Visual Overlay Gradients */}
       <div className="card-visual-overlay" />

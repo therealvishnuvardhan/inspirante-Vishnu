@@ -47,6 +47,57 @@ A unified full-stack application built with Next.js (App Router), MongoDB Atlas,
 
 ## Getting Started
 
+### Clone & Setup
+
+- Clone the repository and change into the project directory:
+
+```bash
+git clone <repo-url>
+cd inspirante-Vishnu
+```
+
+- Install dependencies and create your environment file (see [.env.example](.env.example#L1-L3)):
+
+```bash
+npm install
+cp .env.example .env.local
+```
+
+### MongoDB Atlas Setup
+
+If you don't have a MongoDB instance, use MongoDB Atlas (free tier) and then update `MONGODB_URI` in `.env.local`:
+
+1. Go to https://www.mongodb.com/cloud/atlas and create an account.
+2. Create a new free cluster (Shared Tier).
+3. In "Database Access" create a database user with a username and password.
+4. In "Network Access" add your IP address or use `0.0.0.0/0` for development/testing (not recommended for production).
+5. Click "Connect" → "Connect your application" and copy the connection string. It will look like:
+
+```
+mongodb+srv://<username>:<password>@cluster0.sqv3q1c.mongodb.net/event-portal?appName=Cluster0
+```
+
+6. Replace `<username>` and `<password>` in the connection string and paste it into `.env.local` as `MONGODB_URI`.
+
+Note: If your password contains special characters like `@`, URL-encode them (for example, `@` → `%40`).
+
+### Run & Seed
+
+- Seed the database (optional but recommended to populate test accounts and sample events):
+
+```bash
+npm run seed
+```
+
+- Start the development server (default port `4731`):
+
+```bash
+npm run dev
+```
+
+The app will be available at http://localhost:4731
+
+
 ### 1. Prerequisites
 - [Node.js](https://nodejs.org/) (v18.x or higher recommended)
 - [npm](https://www.npmjs.com/)
