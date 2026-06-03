@@ -125,30 +125,14 @@ The seeded dataset contains 20 student accounts (11 original defaults plus 9 add
 
 ---
 
-## Known Issues / Incomplete Parts / Future Enhancements
+## Known Issues / Incomplete Part
 
-- **JWT Expired Toast**: 
-  * *Status/Description*: In the current implementation, if the JWT token expires, the user is automatically redirected to the login page without showing an explicit "Session Expired" alert or toast message on screen.
-  * *Rationale/Implication*: Although normal unauthorized API requests return a clean 401 response and trigger route protection, showing a user-friendly notice would improve the user experience so they know why they were logged out.
+- **Session Expiration Alerts**: If a session expires, the app redirects the user to the login screen without displaying a "Session Expired" alert box.
+- **Image Storage Method**: Event banner images are saved directly in the MongoDB database as Base64 text strings instead of being uploaded to an external cloud storage bucket.
+- **No Self-Registration**: There is no sign-up page for new student accounts; students must use pre-seeded test accounts.
+- **No Registration Cancellation**: Students are not able to unregister or cancel their booking after joining an event.
+- **No Event Deletion**: Admins can create and edit events, but they cannot delete or hide them once created.
+- **No Instant Seat Updates**: Available seat counts do not update automatically in real-time. The page must be refreshed or navigated to sync the latest bookings.
 
-- **Base64 Event Banner Storage**: 
-  * *Status/Description*: Banner images uploaded by administrators are converted to Base64-encoded Data URLs and stored directly in MongoDB.
-  * *Rationale/Implication*: Storing raw binary media in a database is convenient for zero-dependency local development and seeding. However, this is a major production bottleneck because MongoDB documents are capped at 16MB and large binary strings degrade query performance. A cloud-based storage system (such as Amazon S3, Google Cloud Storage, or Cloudinary) should be used in production to store files and only reference their URLs.
-
-- **No Student Sign-Up/Self-Registration**: 
-  * *Status/Description*: Student accounts can only be provisioned and set up using the database seed script (`seed.js`). There is no public-facing student registration/sign-up form in the user interface.
-  * *Rationale/Implication*: The current scope is designed around predefined test student credentials. In a real-world system, self-service enrollment with email verification would be necessary.
-
-- **No Student Unregister / Cancellation**: 
-  * *Status/Description*: Once a student registers for an event, they are permanently registered. There is no cancellation/unregister button in the "My Registrations" dashboard.
-  * *Rationale/Implication*: Self-service cancellation is essential in practical environments to allow students to withdraw and free up limited seats for other users when their plans change.
-
-- **No Event Deletion / Archiving for Admins**: 
-  * *Status/Description*: Administrators have full permissions to create and edit events, but there is no feature in the dashboard to delete or archive old or cancelled events.
-  * *Rationale/Implication*: Without deletion or archiving mechanisms, the landing page and dashboard views will eventually get cluttered with historical and expired events.
-
-- **No Real-Time Seat Updates (WebSockets)**: 
-  * *Status/Description*: Event seat counts are refreshed on page reload, component lifecycle hooks, or user-initiated actions.
-  * *Rationale/Implication*: Real-time updates via WebSockets (e.g., Socket.io) or Server-Sent Events (SSE) are not implemented. Under heavy simultaneous user traffic (e.g., when a popular event is down to its last few seats), lack of real-time seat counts can lead to race conditions where multiple students try to register for the same remaining seats concurrently.
 
 

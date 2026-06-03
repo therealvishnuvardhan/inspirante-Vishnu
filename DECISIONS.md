@@ -38,6 +38,19 @@ This document outlines the design decisions and technical choices made during th
 
 ## 3. Future Improvements (Given More Time)
 
-1. **Transactional Registrations**: Utilize MongoDB Transactions during event check-and-insert phases to handle high-concurrency race conditions.
-2. **Automated Testing Suite**: Write integration tests using Jest and Cypress to automate flow validations (e.g. registering when at max capacity, login attempts).
-3. **Advanced Admin Actions**: Add abilities for administrators to update, cancel, or delete events, triggering email notifications to registered students.
+1. **Transactional Registrations**: Use MongoDB Transactions to prevent overbooking. When a student registers, the server checks if seats are left and then saves the booking. If two students click register at the exact same millisecond when only 1 seat is left, they might both get registered (a "race condition"). Transactions group these database actions together so MongoDB processes them one by one, rejecting the second student once the seat is gone.
+
+2. **Automated Testing Suite**: Write code to test the website automatically instead of clicking buttons manually. We can use **Jest** to test individual backend actions (like confirming that the API blocks double registrations) and **Cypress** to simulate a browser user logging in and registering, ensuring the UI behaves correctly.
+
+3. **Event Deletion & Archiving**: Add administrative features to delete or archive events, freeing up space and cleaning historical dashboard views.
+
+4. **Session Expiration Alerts**: Implement an API fetch interceptor or Next.js middleware to display a user-friendly "Session Expired" toast notification when JWT tokens lapse before redirecting.
+
+5. **Cloud File Storage Integration**: Connect to an object store like AWS S3 or Cloudinary to upload and host event banner images rather than storing Base64 strings inside MongoDB.
+
+6. **Student Sign-Up Route**: Create a student self-registration (`/signup`) flow with secure password hashing to bypass manual database seeding.
+
+7. **Registration Cancellation**: Add cancellation routes (`DELETE /api/registrations`) and buttons to allow students to cancel bookings and release event seats.
+
+8. **Real-Time Seat Synchronization**: Implement WebSockets or Server-Sent Events (SSE) to sync available event capacities across client browsers instantly without page refreshes.
+
