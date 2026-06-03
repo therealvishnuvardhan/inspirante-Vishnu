@@ -87,13 +87,11 @@ Note: If your password contains special characters like `@`, URL-encode them (fo
 npm run seed
 ```
 
-- Start the development server (default port `4731`):
+- Start the development server:
 
 ```bash
 npm run dev
 ```
-
-The app will be available at http://localhost:4731
 ---
 
 ## Test Accounts

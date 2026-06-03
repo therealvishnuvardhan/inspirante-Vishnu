@@ -376,6 +376,10 @@ function StudentDashboard({ user }) {
         }}
         onCancel={() => setPendingRegisterEvent(null)}
       />
+      {/* Student Footer */}
+      <footer className="site-footer" style={{ marginTop: '3rem' }}>
+        <p>© 2026 EventNest. Student Dashboard — stay updated on your registrations.</p>
+      </footer>
     </div>
   );
 }

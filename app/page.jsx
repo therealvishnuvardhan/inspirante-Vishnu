@@ -77,18 +77,11 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Footer */}
-        <footer style={{
-          marginTop: '6rem',
-          padding: '2.5rem 1rem 1.5rem',
-          borderTop: '1px solid var(--border)',
-          textAlign: 'center',
-          fontSize: '0.85rem',
-          color: 'var(--text-3)'
-        }}>
+          {/* Footer placed outside landing-content for full-bleed background */}
+      </div>
+        <footer className="site-footer">
           <p>© 2026 EventNest. All rights reserved. Connecting campus events and students seamlessly.</p>
         </footer>
-      </div>
     </div>
   );
 }

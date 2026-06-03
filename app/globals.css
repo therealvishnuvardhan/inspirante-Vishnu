@@ -519,6 +519,19 @@ a:hover {
   z-index: 1;
 }
 
+/* ── Footer ─────────────────────────────────────────────────-- */
+.site-footer {
+  margin-top: 4rem;
+  padding: 2.25rem 1rem 1rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-2);
+  background: linear-gradient(180deg, rgba(0,0,0,0.00), rgba(0,0,0,0.04));
+}
+
+.site-footer p { margin: 0; }
+
 .card-visual-content {
   position: relative;
   z-index: 2;

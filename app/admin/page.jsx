@@ -581,6 +581,12 @@ function AdminDashboard({ user }) {
         }}
         onCancel={() => setShowCreateConfirm(false)}
       />
+
+      {/* Admin Footer */}
+      <footer className="site-footer" style={{ marginTop: '3rem' }}>
+        <p>© 2026 EventNest. Admin Dashboard — manage events and registrations.</p>
+      </footer>
+
     </div>
   );
 }
